@@ -1,0 +1,18 @@
+.mainnav {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 10vh;
+  align-items: center;
+  flex-direction: row;
+  text-decoration: none;
+  list-style: none;
+  background: rgba(0,0,0,0.5);    
+}
+.mainnav a {
+  padding-right: 39px;
+}
+
+.drop {
+  display: none;
+}

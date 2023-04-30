@@ -1,0 +1,30 @@
+
+ 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+    display: flex;
+    color:black;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    margin-top:10vh ;
+    flex-direction: column;
+    margin: auto 0;
+}
+a{
+    cursor: pointer;
+}
+.app-container{
+    min-height: 350px;
+}
+.btn-delete-user{
+    width: 40px;
+    text-align: center;
+    box-sizing: content-box;
+}
+img{
+    height: 10vh;
+}
