@@ -1,11 +1,11 @@
-import React from 'react'
-import SalesReceipt from '@/components/sales/saleReceipt'
+import React from "react";
+import SalesReceipt from "@/components/sales/saleReceipt";
 const index = () => {
-    return (
-        <div>
-            <SalesReceipt />
-        </div>
-    )
-}
+  return (
+    <>
+      <SalesReceipt />
+    </>
+  );
+};
 
-export default index
+export default index;

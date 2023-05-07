@@ -1,189 +1,174 @@
-import React, { useState, useEffect } from "react"
-// import { appendErrors, useFrom } from "react-hook-form"
-import { useForm } from "react-hook-form";
-import Link from "next/link";
-import { alertService } from "services/alert.service";
-import { useRouter } from "next/router";
-// import { DevTool } from "@hookform/devtools";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import { userService } from "services/user.service";
+import { useState } from "react";
+import axios from "axios";
 
-const AddEdit = ({ props }) => {
-
-  const [fullName, setName] = useState(" ")
-  const [lastName, setAddressLine1] = useState(" ")
-  const [adharNo, setAddressLine2] = useState(" ")
-  const [address, setCity] = useState(" ")
-  const [city, setPostalCode] = useState(" ")
-  const [competition, setCountry] = useState(" ")
-  const [date, setTelephone] = useState(" ")
-  const [id, setEmail] = useState(" ")
-  const [phoneNo, setNotes] = useState(" ")
-
-  // const user = props?.user;
-  // const isAddMode = !user;
-  const router = useRouter();
-  function submitData() { }
-  // function clicked(data) {
-  //   console.warn("clicked")
-
-  //   try {
-
-  //     data.preventDefault();
-  //     return isAddMode
-  //       ? createUser(data)
-  //       : updateUser(user.id, data);
-
-  //   } catch (error) {
-  //     console.warn(error.message)
-  //   }
-  // }
-
-
-  const validationSchema = Yup.object().shape({
-    vendorCode: Yup.number("userid"),
-    fullName: Yup.string().required("First Name is required"),
-    address1: Yup.string().required("address! is required"),
-    address2: Yup.string().required("address! is required"),
-    postCode: Yup.string().length(6).matches(/^[0-9]{6}/).required("this is required").label("India"),
-    phone: Yup.object({
-      code: Yup.string().matches(/^\+\d+$/i),
-      number: Yup.number().max(10),
-    }),
-    City: Yup.string().required(),
-    email: Yup.string().email("Email is invalid").required("Email is required"),
-    role: Yup.string().required("Role is required"),
-    telephone: Yup.number("enter the number"),
-    Country: Yup.string().required("country is required"),
-    notes: Yup.string(),
-
+const AddEdit = () => {
+  const [vendor, setVendor] = useState({
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    country: "",
+    email: "",
+    notes: "",
+    postalCode: "",
+    telephone: "",
+    vendorName: "",
   });
-  const formOptions = { resolver: yupResolver(validationSchema) };
-  //default form value
-  // if (!isAddMode) {
-  //   const { ...defaultValues } = user;
-  //   formOptions.defaultValues = defaultValues;
-  // }
+  const [error, setError] = useState({
+    postCodeError: false,
+  });
 
-  //get function to build form with useForm() hook
-  // const form= useForm( formOptions);
-  const { register, handleSubmit, reset, formState, control } = useForm(formOptions);
-  const access_token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyQGdpcm5hci5jb20iLCJleHAiOjE2ODMzNTc2MTAsImlhdCI6MTY4Mjc1NDkxMH0._yc-mFrO52xyL3tqs1RSIgng9TSmisAFfu4xsXilAiU6ste_j144eFE42bix7NtwopJcQQchUl60dz7_TdHCOw"
-  // const { register, handleSubmit, reset, formState, control }=form;
-  const { errors } = formState;
+  const { postCodeError } = error;
 
+  let user;
+  let refreshToken;
+  if (typeof window !== "undefined") {
+    user = localStorage.getItem("user");
+    refreshToken = JSON.parse(user)?.refresh_token;
+  }
 
+  const handleInput = (e) => {
+    setVendor((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-  //creat the new user
+  const addVendor = async (vendor) => {
+    try {
+      const response = await axios({
+        method: "post",
+        url: "http://18.139.85.219:8088/api/v1/vendor",
+        headers: { authorization: `Bearer ${refreshToken}` },
+        data: {
+          ...vendor,
+        },
+      });
+      if (response.status === 201) {
+        console.log("success");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const inputStyle = "border-2 border-black rounded outline-0 px-2 py-1";
+  const containerStyle = "flex flex-col";
+console.log(vendor.postalCode);
   return (
-    <>
-      {/* <h1>{isAddMode ? 'ADD VENDOR' : 'EDIT VENDOR'}</h1> */}
-      <h1 className="text-bold text-xl flex item-center justify-center py-5">Add Vendor</h1>
-      <form onSubmit={handleSubmit(submitData)} className={`flex flex-col justify-center w-full align-center
-    items-center space-y-5 `} >
+    <section className="w-[40%] flex flex-wrap gap-10 mx-auto mt-8">
+      <div className={containerStyle}>
+        <label htmlFor="full-name">Full Name</label>
+        <input
+          type="text"
+          id="full-name"
+          className={inputStyle}
+          name="vendorName"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="address1">Address (Line 1)</label>
+        <input
+          type="text"
+          id="address1"
+          className={inputStyle}
+          name="addressLine1"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="address2">Address (Line 2)</label>
+        <input
+          type="text"
+          id="addressLine2"
+          className={inputStyle}
+          name="address2"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="post-code">Post Code</label>
+        <input
+          type="text"
+          id="post-code"
+          className={inputStyle}
+          name="postalCode"
+          maxLength="6"
+          onChange={(e) => {
+            if (/^\d+$/.test(e.target.value)) {
+              if (postCodeError) {
+                setError((prev) => ({ ...prev, postCodeError: false }));
+              }
+              handleInput(e);
+            } else {
+              setError((prev) => ({ ...prev, postCodeError: true }));
+            }
+          }}
+        />
+        {postCodeError && <p className="text-red-500">Enter only numbers</p>}
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="country">Country</label>
+        <input
+          type="text"
+          id="country"
+          className={inputStyle}
+          name="country"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="city">City</label>
+        <input
+          type="text"
+          id="city"
+          className={inputStyle}
+          name="city"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="email">Email</label>
+        <input
+          type="text"
+          id="email"
+          className={inputStyle}
+          name="email"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="telephone">Telephone</label>
+        <input
+          type="text"
+          id="telephone"
+          className={inputStyle}
+          name="telephone"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="notes">Notes</label>
+        <input
+          type="text"
+          id="notes"
+          className={inputStyle}
+          name="notes"
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className="flex gap-2 justify-center">
+        <button
+          className="px-6 py-1 border-2 border-black rounded"
+          onClick={() => addVendor(vendor)}
+        >
+          Save
+        </button>
+        <button className="px-6 py-1 border-2 border-black rounded">
+          Reset
+        </button>
+        <button className="px-6 py-1 border-2 border-black rounded">
+          Cancel
+        </button>
+      </div>
+    </section>
+  );
+};
 
-
-
-
-
-
-
-        <div className="flex justify-around w-[80%] ">
-          <div className="flex flex-col form-row w-[30%]">
-            {/* <div div className="flex flex-col form-row"> */}
-
-            <div className="form-group">
-              <label>Vendor Code</label>
-              <input name="vendorCode" type="text"{...register("vendorCode")} className={`form-control border-2 border-black rounded-md ${errors.vendorCode ? "is-invalid" : ""}`} />
-              <div className="invalid-feedback">{errors.vendorCode?.message}</div>
-
-            </div>
-            <div className="form-group">
-              <label>Address (Line!)</label>
-              <input name="address1" type="text"{...register("address1")} className={`form-control border-2 border-black rounded-md ${errors.address1 ? "is-invalid" : ""}`} />
-              <div className="invalid-feedback">{errors.address1?.message}</div>
-
-            </div>
-            <div className="form-group">
-              <label>Post Code</label>
-              <input name="postCode" type="text" {...register("postCode")} className={`form-control border-2 border-black rounded-md ${errors.postCode ? "is-invalid " : ""}`} />
-              <div className="invalid-feedback">{errors.postCode?.message}</div>
-
-            </div>
-            <div className="form-group">
-              <label>City</label>
-              <input name="City" type="text" {...register("City")} className={`form-control border-2 border-black rounded-md ${errors.City ? "is-invalid " : ""}`} />
-              <div className="invalid-feedback">{errors.City?.message}</div>
-
-            </div>
-            <div className="form-group">
-              <label>Telephone</label>
-              <input name="telephone" type="text" {...register("telephone")} className={`form-control border-2 border-black rounded-md ${errors.telephone ? "is-invalid " : ""}`} />
-              <div className="invalid-feedback">{errors.telephone?.message}</div>
-
-            </div>
-          </div>
-
-
-
-          {/* <div className="flex flex-col   "> */}
-          <div className="flex flex-col form-row w-[30%]">
-            {/* <div className="flex flex-col align-center form-row"> */}
-            <div className="form-group ">
-              <label>Full Name</label>
-              <input value={fullName} name="fullName" type="text" onChange={(e) => setName(e.target.value)} {...register("fullName")} className={`form-control border-2 border-black rounded-md ${errors.fullName ? "is-invalid" : ""}`} />
-              <div className="invalid-feedback">{errors.fullName?.message}</div>
-            </div>
-
-            <div className="form-group">
-              <label>Address (Line2)</label>
-              <input name="address2" type="text"{...register("address2")} className={`form-control border-2 border-black rounded-md ${errors.address2 ? "is-invalid" : ""}`} />
-              <div className="invalid-feedback">{errors.address2?.message}</div>
-
-            </div>
-            <div className="form-group">
-              <label>Country</label>
-              <input name="Country" type="text"{...register("Country")} className={`form-control border-2 border-black rounded-md ${errors.Country ? "is-invalid" : ""}`} />
-              <div className="invalid-feedback">{errors.Country?.message}</div>
-
-            </div>
-            <div className="form-group ">
-              <label>Email</label>
-              <input name="email" type="text" {...register("email")} className={`form-control border-2 border-black rounded-md ${errors.email ? "is-invalid" : ""}`} />
-              <div className="invalid-feedback">{errors.email?.message}</div>
-            </div>
-
-            <div className="form-group">
-              <label>Notes</label>
-              <input name="notes" type="text" {...register("notes")} className={`form-control border-2 border-black rounded-md ${errors.notes ? "is-invalid " : ""}`} />
-              <div className="invalid-feedback">{errors.notes?.message}</div>
-
-            </div>
-
-          </div>
-        </div>
-
-
-        <div className="form-group ">
-          <button type="submit" href="/users" onClick={handleSubmit(submitData)} disabled={formState.isSubmitting} className="btn text-black btn-success mr-2">
-            {/* {formState.isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}  */}
-            Save
-          </button>
-
-          <button onClick={() => reset(formOptions.defaultValues)} type="button" disabled={formState.isSubmitting} className="btn btn-secondary text-black">Reset</button>
-          <Link href="/users" className="btn text-black btn-danger btn-link" >Cancel</Link>
-          {/* <button type="submit" onClick={handleSubmit(onSubmit)}>submit</button> */}
-        </div>
-
-
-
-      </form>
-      {/* <DevTool control={control} /> */}
-
-
-    </>
-  )
-}
-
-export default AddEdit
+export default AddEdit;
