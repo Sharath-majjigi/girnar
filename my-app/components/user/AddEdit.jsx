@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import Router from "next/router";
 
-const AddEdit = () => {
-  const [vendor, setVendor] = useState({
+const AddEdit = ({ isEdit, id }) => {
+  const initialState = {
     addressLine1: "",
     addressLine2: "",
     city: "",
@@ -12,12 +14,45 @@ const AddEdit = () => {
     postalCode: "",
     telephone: "",
     vendorName: "",
-  });
-  const [error, setError] = useState({
-    postCodeError: false,
-  });
+  };
+  const [vendor, setVendor] = useState({ ...initialState });
+  const [error, setError] = useState({ postCodeError: false });
 
+  const {
+    addressLine1,
+    addressLine2,
+    vendorName,
+    telephone,
+    notes,
+    email,
+    country,
+    city,
+    postalCode,
+  } = vendor;
   const { postCodeError } = error;
+
+  const getVendorById = async (id) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `http://18.139.85.219:8088/api/v1/vendor/${id}`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+      });
+      if (response.status === 200) {
+        const data = response.data;
+        delete data.id;
+        setVendor({ ...data });
+      }
+    } catch (error) {
+      toast.error("error occurred while getting vendor data by id");
+    }
+  };
+
+  useEffect(() => {
+    if (isEdit) {
+      getVendorById(id);
+    }
+  }, [isEdit, id]);
 
   let user;
   let refreshToken;
@@ -41,15 +76,37 @@ const AddEdit = () => {
         },
       });
       if (response.status === 201) {
-        console.log("success");
+        toast.success("Vendor added successfully");
+        setVendor({ ...initialState });
+        Router.push("/vendor");
       }
     } catch (error) {
-      console.error(error);
+      toast.error("Error occurred while adding vendor");
+    }
+  };
+
+  const updateVendor = async (vendor, id) => {
+    try {
+      const response = await axios({
+        method: "put",
+        url: `http://18.139.85.219:8088/api/v1/vendor/${id}`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+        data: {
+          ...vendor,
+        },
+      });
+      if (response.status === 200) {
+        toast.success("Vendor updated successfully");
+        setVendor({ ...initialState });
+        Router.push("/vendor");
+      }
+    } catch (error) {
+      toast.error("Error occurred while updating vendor");
     }
   };
   const inputStyle = "border-2 border-black rounded outline-0 px-2 py-1";
   const containerStyle = "flex flex-col";
-console.log(vendor.postalCode);
+
   return (
     <section className="w-[40%] flex flex-wrap gap-10 mx-auto mt-8">
       <div className={containerStyle}>
@@ -59,6 +116,7 @@ console.log(vendor.postalCode);
           id="full-name"
           className={inputStyle}
           name="vendorName"
+          value={vendorName}
           onChange={(e) => handleInput(e)}
         />
       </div>
@@ -69,16 +127,18 @@ console.log(vendor.postalCode);
           id="address1"
           className={inputStyle}
           name="addressLine1"
+          value={addressLine1}
           onChange={(e) => handleInput(e)}
         />
       </div>
       <div className={containerStyle}>
-        <label htmlFor="address2">Address (Line 2)</label>
+        <label htmlFor="addressLine2">Address (Line 2)</label>
         <input
           type="text"
           id="addressLine2"
           className={inputStyle}
-          name="address2"
+          name="addressLine2"
+          value={addressLine2}
           onChange={(e) => handleInput(e)}
         />
       </div>
@@ -89,6 +149,7 @@ console.log(vendor.postalCode);
           id="post-code"
           className={inputStyle}
           name="postalCode"
+          value={postalCode}
           maxLength="6"
           onChange={(e) => {
             if (/^\d+$/.test(e.target.value)) {
@@ -110,6 +171,7 @@ console.log(vendor.postalCode);
           id="country"
           className={inputStyle}
           name="country"
+          value={country}
           onChange={(e) => handleInput(e)}
         />
       </div>
@@ -120,6 +182,7 @@ console.log(vendor.postalCode);
           id="city"
           className={inputStyle}
           name="city"
+          value={city}
           onChange={(e) => handleInput(e)}
         />
       </div>
@@ -130,6 +193,7 @@ console.log(vendor.postalCode);
           id="email"
           className={inputStyle}
           name="email"
+          value={email}
           onChange={(e) => handleInput(e)}
         />
       </div>
@@ -140,6 +204,7 @@ console.log(vendor.postalCode);
           id="telephone"
           className={inputStyle}
           name="telephone"
+          value={telephone}
           onChange={(e) => handleInput(e)}
         />
       </div>
@@ -150,20 +215,30 @@ console.log(vendor.postalCode);
           id="notes"
           className={inputStyle}
           name="notes"
+          value={notes}
           onChange={(e) => handleInput(e)}
         />
       </div>
       <div className="flex gap-2 justify-center">
+        {isEdit ? (
+          <button
+            className="px-6 py-1 border-2 border-black rounded"
+            onClick={() => updateVendor(vendor, id)}
+          >
+            Update
+          </button>
+        ) : (
+          <button
+            className="px-6 py-1 border-2 border-black rounded"
+            onClick={() => addVendor(vendor)}
+          >
+            Save
+          </button>
+        )}
         <button
           className="px-6 py-1 border-2 border-black rounded"
-          onClick={() => addVendor(vendor)}
+          onClick={() => setVendor({ ...initialState })}
         >
-          Save
-        </button>
-        <button className="px-6 py-1 border-2 border-black rounded">
-          Reset
-        </button>
-        <button className="px-6 py-1 border-2 border-black rounded">
           Cancel
         </button>
       </div>

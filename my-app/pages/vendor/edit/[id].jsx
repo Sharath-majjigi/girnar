@@ -1,11 +1,11 @@
 import AddEdit from "@/components/user/AddEdit";
-import { userService } from "services/user.service";
+import { useRouter } from "next/router";
+import React from "react";
 
-export async function getServerSideProps({ params }) {
-  const user = await userService.getById(params.id);
-  return {
-    props: { user },
-  };
-}
+const EditVendor = () => {
+  const {query: {id}} = useRouter();
+  console.log(id)
+  return <AddEdit isEdit={true} id={id} />;
+};
 
-export default AddEdit;
+export default EditVendor;

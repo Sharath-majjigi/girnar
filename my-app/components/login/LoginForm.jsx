@@ -22,7 +22,7 @@ const LoginFrom = () => {
       if (response.status === 200) {
         const girnarUser = { access_token, refresh_token, role, userName, id };
         localStorage.setItem("user", JSON.stringify(girnarUser));
-        Router.push("/users");
+        Router.push("/vendor");
       }
     } catch (error) {
       console.log(error);
