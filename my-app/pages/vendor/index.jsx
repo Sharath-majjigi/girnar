@@ -1,11 +1,13 @@
 import { Link } from "components/Link";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { VendorModal } from "@/components";
+import { UserModal } from "@/components";
+import { toast } from "react-toastify";
 
 const Index = () => {
   const [users, setUsers] = useState();
   const [isModal, setIsModal] = useState(false);
+  const [isDeleteModal, setIsDeleteModal] = useState(false);
 
   let user;
   let refreshToken;
@@ -25,7 +27,7 @@ const Index = () => {
         setUsers(res.data);
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Error occurred while getting the vendor list");
     }
   };
 
@@ -36,12 +38,12 @@ const Index = () => {
         url: `http://18.139.85.219:8088/api/v1/vendor/${id}`,
         headers: { authorization: `Bearer ${refreshToken}` },
       });
-      console.log(res);
-      // if (res.status === 200) {
-      //   setUsers(res.data);
-      // }
+      if (res.status === 200) {
+        toast.success("Successfully deleted the vendor");
+        getVendors();
+      }
     } catch (error) {
-      console.log(error);
+      toast.error("Error occurred while deleting the vendor");
     }
   };
 
@@ -125,7 +127,20 @@ const Index = () => {
           {users?.map((user) => (
             <tr key={user.id}>
               {isModal && (
-                <VendorModal cancel={() => setIsModal(false)} user={user} />
+                <UserModal
+                  cancel={() => setIsModal(false)}
+                  user={user}
+                  name="vendor"
+                />
+              )}
+              {isDeleteModal && (
+                <UserModal
+                  cancel={() => setIsDeleteModal(false)}
+                  isDelete={isDeleteModal}
+                  deleteUser={() => deleteVendor(user.id)}
+                  user={user}
+                  name="vendor"
+                />
               )}
               <td>{user.id}</td>
               <td>{user.vendorName}</td>
@@ -147,7 +162,7 @@ const Index = () => {
                 </Link>
                 <button
                   onClick={() => {
-                    deleteVendor(user.id);
+                    setIsDeleteModal(true);
                   }}
                   className="btn btn-sm btn-danger btn-delete-user px-3"
                   disabled={user.isDeleting}
@@ -170,11 +185,7 @@ const Index = () => {
             </tr>
           )}
           {users && !users.length && (
-            <tr>
-              <td conSpan="4" className="text-center">
-                <div className="p-2"> No Users To Displays</div>
-              </td>
-            </tr>
+            <div className="p-2 text-center text-xl"> No Users To Displays</div>
           )}
         </tbody>
       </table>

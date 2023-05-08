@@ -1,8 +1,8 @@
 import React from "react";
-import AddEdit from "components/user/AddEdit";
+import { VendorForm } from "@/components";
 
 const AddVendor = () => {
-  return <AddEdit />;
+  return <VendorForm />;
 };
 
 export default AddVendor;
