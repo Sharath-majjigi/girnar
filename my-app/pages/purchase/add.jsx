@@ -1,8 +1,8 @@
-import { PaymentForm } from "@/components";
+import { PurchaseForm } from "@/components";
 import React from "react";
 
 const add = () => {
-  return <PaymentForm />;
+  return <PurchaseForm />;
 };
 
 export default add;

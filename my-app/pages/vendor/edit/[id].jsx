@@ -6,7 +6,7 @@ const EditVendor = () => {
   const {
     query: { id },
   } = useRouter();
-  console.log(id);
+  
   return <VendorForm isEdit={true} id={id} />;
 };
 

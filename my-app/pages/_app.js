@@ -1,11 +1,14 @@
-import "/styles/globals.css";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Navbar from "../components/Navbar";
 import Head from "next/head";
 import { ToastContainer } from "react-toastify";
+import { useRouter } from "next/router";
+import "/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function App({ Component, pageProps }) {
+  const r = useRouter();
+  
   return (
     <>
       <Head>
@@ -15,7 +18,7 @@ export default function App({ Component, pageProps }) {
         />
       </Head>
       <main className="app-container">
-        <Navbar />
+        {r.asPath !== "/" && <Navbar />}
         <Component {...pageProps} />;
         <ToastContainer />
       </main>

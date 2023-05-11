@@ -1,21 +1,29 @@
 import { Link } from "components/Link";
+import axios from "axios";
 import { useEffect, useState } from "react";
-import { UserModal } from "@/components";
-import { deleteVendor, getVendors } from "@/services/vendor";
+import { PurchaseModal } from "@/components";
+import { toast } from "react-toastify";
+import { getPoh } from "@/services/poh";
 
 const Index = () => {
-  const [users, setUsers] = useState();
+  const [poh, setPoh] = useState();
   const [isModal, setIsModal] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
 
+  let user;
+  let refreshToken;
+  if (typeof window !== "undefined") {
+    user = localStorage.getItem("user");
+    refreshToken = JSON.parse(user)?.refresh_token;
+  }
+
   useEffect(() => {
-    getVendors(setUsers);
+    getPoh(setPoh, refreshToken);
   }, []);
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-center my-6">VENDORS</h2>
-
+      <h2 className="text-2xl font-semibold text-center my-6">PURCHASES</h2>
       <section className="flex justify-between px-4">
         <div className="flex items-center">
           <label htmlFor="simple-search" className="sr-only">
@@ -68,10 +76,10 @@ const Index = () => {
         </div>
 
         <Link
-          href="/vendor/add"
+          href="/purchase/add"
           className="btn btn-sm no-underline btn-success px-4 py-1 text-lg"
         >
-          Add Vendor
+          Add POH
         </Link>
       </section>
 
@@ -79,33 +87,35 @@ const Index = () => {
         <thead>
           <tr>
             <th className="w-1/4 text-center border-x-2">id</th>
-            <th className="w-1/4 text-center border-r-2">Name</th>
-            <th className="w-1/4 text-center border-r-2">Telephone</th>
+            <th className="w-1/4 text-center border-r-2">Vendor Name</th>
+            <th className="w-1/4 text-center border-r-2">PO Date</th>
             <th className="w-1/4 border-r-2"></th>
           </tr>
         </thead>
         <tbody>
-          {users?.map((user) => (
+          {poh?.map((user) => (
             <tr key={user.id}>
               {isModal && (
-                <UserModal
+                <PurchaseModal
+                  name="purchase"
                   cancel={() => setIsModal(false)}
                   user={user}
-                  name="vendor"
                 />
               )}
               {isDeleteModal && (
-                <UserModal
+                <PurchaseModal
                   cancel={() => setIsDeleteModal(false)}
                   isDelete={isDeleteModal}
-                  deleteUser={() => deleteVendor(user.id, getVendors)}
+                  deleteUser={() =>
+                    deleteCustomer(user.id, setPoh, refreshToken)
+                  }
                   user={user}
-                  name="vendor"
+                  name="purchase"
                 />
               )}
               <td>{user.id}</td>
-              <td>{user.vendorName}</td>
-              <td>{user.telephone}</td>
+              <td>{user.vendor.vendorName}</td>
+              <td>{user.poDate}</td>
               <td className="flex justify-evenly">
                 <button
                   className="btn btn-sm btn-success px-3"
@@ -115,12 +125,12 @@ const Index = () => {
                 >
                   View
                 </button>
-                <Link
-                  href={`/vendor/edit/${user.id}`}
+                {/* <Link
+                  href={`/customer/edit/${user.id}`}
                   className="btn btn-sm btn-primary px-3"
                 >
                   Edit
-                </Link>
+                </Link> */}
                 <button
                   onClick={() => {
                     setIsDeleteModal(true);
@@ -138,15 +148,15 @@ const Index = () => {
             </tr>
           ))}
 
-          {!users && (
+          {!poh && (
             <tr>
               <td colSpan="4" className="text-center">
                 <div className="spinner-border spinner-border-lg align-center"></div>
               </td>
             </tr>
           )}
-          {users && !users.length && (
-            <div className="p-2 text-center text-xl"> No Users To Displays</div>
+          {poh && !poh.length && (
+            <div className="p-2 text-center text-xl"> No POH To Display</div>
           )}
         </tbody>
       </table>
