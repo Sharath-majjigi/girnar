@@ -1,5 +1,4 @@
 import { getPoh } from "@/services/poh";
-import { getVendors } from "@/services/vendor";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -33,7 +32,7 @@ const PaymentForm = () => {
     userId = JSON.parse(user)?.id;
   }
 
-  const postPurchaseOrder = async (
+  const postPaymentOrder = async (
     userId,
     pohId,
     paymentDetails,
@@ -49,13 +48,13 @@ const PaymentForm = () => {
       const details = { ...paymentDetails, requests: newRequests };
       const res = await axios({
         method: "post",
-        url: `http://18.139.85.219:8088/api/v1/poh/${userId}/${pohId}`,
+        url: `http://18.139.85.219:8088/api/v1/pop/${userId}/${pohId}`,
         headers: { authorization: `Bearer ${refreshToken}` },
         data: {
           ...details,
         },
       });
-      if (res.status === 200) {
+      if (res.status === 201) {
         setPaymentDetails(initialState);
         toast.success("Successfully created the payment order");
       }
@@ -139,17 +138,17 @@ const PaymentForm = () => {
               setPohDetails(JSON.parse(e.target.value));
             }}
           >
-            <option value="">Select Vendor</option>
+            <option value="">Select PO number</option>
             {pohList.map((poh) => (
               <option value={JSON.stringify(poh)}>{poh.id}</option>
             ))}
           </select>
         </div>
         <div>
-          <label htmlFor="po-date">PO Date:</label>
+          <label htmlFor="poDate">PO Date:</label>
           <input
             type="date"
-            id="po-date"
+            id="poDate"
             className={`${inputStyle} cursor-pointer`}
             name="poDate"
             value={poDate}
@@ -302,9 +301,9 @@ const PaymentForm = () => {
       <div className="flex justify-center gap-4">
         <button
           onClick={() =>
-            postPurchaseOrder(
+            postPaymentOrder(
               userId,
-              pohId,
+              pohDetails.id,
               paymentDetails,
               setPaymentDetails,
               initialState
