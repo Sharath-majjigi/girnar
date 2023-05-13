@@ -16,7 +16,7 @@ const getPoh = async (setPoh, refreshToken) => {
   }
 };
 
-const deleteCustomer = async (pid, setPoh, refreshToken) => {
+const deletePurchaseOrder = async (pid, setPoh, refreshToken, getPoh) => {
   try {
     const res = await axios({
       method: "delete",
@@ -32,4 +32,4 @@ const deleteCustomer = async (pid, setPoh, refreshToken) => {
   }
 };
 
-export { getPoh, deleteCustomer };
+export { getPoh, deletePurchaseOrder };

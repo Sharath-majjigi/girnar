@@ -1,8 +1,6 @@
 import { Link } from "components/Link";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { PurchaseModal } from "@/components";
-import { toast } from "react-toastify";
 import { getPoh } from "@/services/poh";
 
 const Index = () => {
@@ -107,7 +105,7 @@ const Index = () => {
                   cancel={() => setIsDeleteModal(false)}
                   isDelete={isDeleteModal}
                   deleteUser={() =>
-                    deleteCustomer(user.id, setPoh, refreshToken)
+                    deletePurchaseOrder(user.id, setPoh, refreshToken, getPoh)
                   }
                   user={user}
                   name="purchase"

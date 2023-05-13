@@ -1,23 +1,25 @@
 import { Link } from "components/Link";
 import { useEffect, useState } from "react";
 import { PaymentModal } from "@/components";
-import { getPayment } from "@/services/payments";
+import { deletePayment, getPayment } from "@/services/payments";
 
 const Index = () => {
-  const [payments, setPayments] = useState();
+  const [payments, setPayments] = useState([]);
   const [isModal, setIsModal] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [user, setUser] = useState(undefined);
+  const [refreshToken, setRefreshToken] = useState(undefined);
 
-  let user;
-  let refreshToken;
-  if (typeof window !== "undefined") {
-    user = localStorage.getItem("user");
-    refreshToken = JSON.parse(user)?.refresh_token;
-  }
   console.log(payments);
   useEffect(() => {
-    getPayment(setPayments, refreshToken);
-  }, []);
+    setUser(localStorage.getItem("user"));
+    if (user !== undefined) {
+      setRefreshToken(JSON.parse(user)?.refresh_token);
+    }
+    if (refreshToken !== undefined) {
+      getPayment(setPayments, refreshToken);
+    }
+  }, [user, refreshToken]);
 
   return (
     <div>
@@ -84,10 +86,11 @@ const Index = () => {
       <table className="table table-striped mt-4 mb-10">
         <thead>
           <tr>
-            <th className="w-1/4 text-center border-x-2">id</th>
-            <th className="w-1/4 text-center border-r-2">Vendor Name</th>
-            <th className="w-1/4 text-center border-r-2">PO Date</th>
-            <th className="w-1/4 border-r-2"></th>
+            <th className="text-center border-x-2">id</th>
+            <th className="text-center border-r-2">Description</th>
+            <th className="text-center border-r-2">Date</th>
+            <th className="text-center border-r-2">Amount Paid</th>
+            <th className="border-r-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -104,14 +107,20 @@ const Index = () => {
                   cancel={() => setIsDeleteModal(false)}
                   isDelete={isDeleteModal}
                   deleteUser={() =>
-                    deleteCustomer(payment.id, setPayments, refreshToken)
+                    deletePayment(
+                      payment.id,
+                      setPayments,
+                      refreshToken,
+                      getPayment
+                    )
                   }
                   payment={payment}
                 />
               )}
               <td>{payment.id}</td>
-              <td>{payment.vendorName}</td>
-              <td>{payment.poDate}</td>
+              <td>{payment.description}</td>
+              <td>{payment.date}</td>
+              <td>{payment.amountPaid}</td>
               <td className="flex justify-evenly">
                 <button
                   className="btn btn-sm btn-success px-3"
@@ -138,18 +147,8 @@ const Index = () => {
               </td>
             </tr>
           ))}
-
-          {!payments && (
-            <tr>
-              <td colSpan="4" className="text-center">
-                <div className="spinner-border spinner-border-lg align-center"></div>
-              </td>
-            </tr>
-          )}
           {payments && !payments.length && (
-            <div className="p-2 text-center text-xl">
-              No Payments To Display
-            </div>
+            <p className="p-2 text-center text-xl">No Payments To Display</p>
           )}
         </tbody>
       </table>
