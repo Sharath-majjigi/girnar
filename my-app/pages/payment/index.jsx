@@ -5,8 +5,8 @@ import { deletePayment, getPayment } from "@/services/payments";
 
 const Index = () => {
   const [payments, setPayments] = useState(undefined);
-  const [isModal, setIsModal] = useState(false);
-  const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [isModal, setIsModal] = useState(null);
+  const [isDeleteModal, setIsDeleteModal] = useState(null);
   const [user, setUser] = useState(undefined);
   const [refreshToken, setRefreshToken] = useState(undefined);
 
@@ -95,15 +95,15 @@ const Index = () => {
         <tbody>
           {payments?.map((payment) => (
             <tr key={payment.id}>
-              {isModal && (
+              {isModal === payment.id && (
                 <PaymentModal
-                  cancel={() => setIsModal(false)}
+                  cancel={() => setIsModal(null)}
                   payment={payment}
                 />
               )}
-              {isDeleteModal && (
+              {isDeleteModal === payment.id && (
                 <PaymentModal
-                  cancel={() => setIsDeleteModal(false)}
+                  cancel={() => setIsDeleteModal(null)}
                   isDelete={isDeleteModal}
                   deleteUser={() =>
                     deletePayment(
@@ -124,7 +124,7 @@ const Index = () => {
                 <button
                   className="btn btn-sm btn-success px-3"
                   onClick={() => {
-                    setIsModal(true);
+                    setIsModal(payment.id);
                   }}
                 >
                   View
@@ -137,7 +137,7 @@ const Index = () => {
                 </Link> */}
                 <button
                   onClick={() => {
-                    setIsDeleteModal(true);
+                    setIsDeleteModal(payment.id);
                   }}
                   className="btn btn-sm btn-danger btn-delete-user px-3"
                 >

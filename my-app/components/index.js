@@ -7,3 +7,6 @@ export { PaymentForm } from "./payment-form/PaymentForm";
 export { PaymentModal } from "./payment-modal/PaymentModal";
 export { LoginForm } from "./login-form/LoginForm";
 export { SalesEntryForm } from "./sales-entry-form/SalesEntryForm";
+export { SalesEntryModal } from "./sales-entry-modal/SalesEntryModal";
+export { SalesReceiptForm } from "./sales-receipt-form/SalesReceiptForm";
+export { SalesReceiptModal } from "./sales-receipt-modal/SalesReceiptModal";

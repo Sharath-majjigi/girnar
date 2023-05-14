@@ -1,5 +1,7 @@
 import { getVendors } from "@/services/vendor";
+import { getDateFormate } from "@/utils/date";
 import axios from "axios";
+import Router from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -14,7 +16,7 @@ const PurchaseForm = () => {
   };
 
   const initialState = {
-    poDate: "",
+    poDate: getDateFormate(),
     description: "",
     remarks: "",
     pod: [podInitialState],
@@ -43,7 +45,29 @@ const PurchaseForm = () => {
     initialState
   ) => {
     try {
-      const { pod } = poDetails;
+      const { description, remarks, pod } = poDetails;
+      const isEmpty = pod.reduce((acc, curr) => {
+        if (
+          curr.description1 === "" ||
+          curr.description2 === "" ||
+          curr.paxName === "" ||
+          curr.purchaseCost === 0 ||
+          curr.sellPrice === 0
+        ) {
+          acc.push(true);
+          return acc;
+        }
+        acc.push(false);
+        return acc;
+      }, []);
+      if (
+        vendorId === "" ||
+        remarks === "" ||
+        description === "" ||
+        isEmpty.includes(true)
+      ) {
+        return toast.warn("Please fill all details");
+      }
       const newPod = pod.map((entry) => {
         delete entry.id;
         return entry;
@@ -58,12 +82,12 @@ const PurchaseForm = () => {
         },
       });
       if (res.status === 200) {
-        console.log(res)
         setPoDetails(initialState);
-        toast.success("Successfully created the payment order");
+        toast.success("Successfully created the purchase order");
+        Router.push("/purchase");
       }
     } catch (error) {
-      toast.error("Error occurred while creating the payment order");
+      toast.error("Error occurred while creating the purchase order");
     }
   };
 
@@ -71,12 +95,12 @@ const PurchaseForm = () => {
     getVendors(setVendors);
   }, []);
 
-  const totalPoAmount = poDetails.pod.reduce((acc, curr) => {
+  const totalPoAmount = poDetails?.pod?.reduce((acc, curr) => {
     acc += Number(curr.purchaseCost);
     return acc;
   }, 0);
 
-  const totalSellPrice = poDetails.pod.reduce((acc, curr) => {
+  const totalSellPrice = poDetails?.pod?.reduce((acc, curr) => {
     acc += Number(curr.sellPrice);
     return acc;
   }, 0);
@@ -151,6 +175,17 @@ const PurchaseForm = () => {
             name="poDate"
             value={poDate}
             onChange={(e) => handleInput(e, setPoDetails)}
+          />
+        </div>
+        <div>
+          <label htmlFor="userId">User Id:</label>
+          <input
+            type="text"
+            id="userId"
+            className={`${inputStyle} cursor-pointer`}
+            name="userId"
+            value={userId}
+            disabled={true}
           />
         </div>
         <div>
@@ -291,7 +326,15 @@ const PurchaseForm = () => {
       </table>
       <div className="flex justify-center gap-4">
         <button
-          onClick={() => postPurchaseOrder(userId, vendorId, poDetails)}
+          onClick={() =>
+            postPurchaseOrder(
+              userId,
+              vendorId,
+              poDetails,
+              setPoDetails,
+              initialState
+            )
+          }
           className="btn btn-sm btn-success px-4 py-2"
         >
           SAVE

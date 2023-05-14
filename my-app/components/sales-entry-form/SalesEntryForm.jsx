@@ -1,34 +1,35 @@
 import { getCustomers } from "@/services/customer";
 import { getPurchaseOrders } from "@/services/poh";
-import axios from "axios";
+import { getSalesCategories } from "@/services/salesCategory";
+import { postSalesEntry } from "@/services/salesEntry";
+import { getDateFormate } from "@/utils/date";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 const SalesEntryForm = () => {
   const seInitialState = {
     id: 1,
     poNumber: "",
     poDate: "",
-    description1: "",
-    description2: "",
-    purchaseCost: "",
-    sellPrice: "",
+    description: "",
+    amount: "",
+    sellAmount: "",
   };
 
   const initialState = {
-    date: "",
+    date: getDateFormate(),
     description: "",
     discount: 0,
     message: "",
     salesCat: "",
-    salesDetailList: [seInitialState],
     vatAmt: 0,
+    salesDetailList: [seInitialState],
   };
 
   const [salesEntryDetails, setSalesEntryDetails] = useState(initialState);
   const [customers, setCustomers] = useState([]);
   const [customerId, setCustomerId] = useState("");
   const [purchaseOrders, setPurchaseOrders] = useState([]);
+  const [salesCategories, setSalesCategories] = useState(undefined);
 
   const { date, description, discount, message, salesDetailList, vatAmt } =
     salesEntryDetails;
@@ -42,49 +43,18 @@ const SalesEntryForm = () => {
     userId = JSON.parse(user)?.id;
   }
 
-  //   const postSalesEntry = async (
-  //     userId,
-  //     vendorId,
-  //     poDetails,
-  //     setPoDetails,
-  //     initialState
-  //   ) => {
-  //     try {
-  //       const { pod } = poDetails;
-  //       const newPod = pod.map((entry) => {
-  //         delete entry.id;
-  //         return entry;
-  //       });
-  //       const details = { ...poDetails, pod: newPod };
-  //       const res = await axios({
-  //         method: "post",
-  //         url: `http://18.139.85.219:8088/api/v1/poh/${userId}/${vendorId}`,
-  //         headers: { authorization: `Bearer ${refreshToken}` },
-  //         data: {
-  //           ...details,
-  //         },
-  //       });
-  //       if (res.status === 200) {
-  //         console.log(res)
-  //         setPoDetails(initialState);
-  //         toast.success("Successfully created the payment order");
-  //       }
-  //     } catch (error) {
-  //       toast.error("Error occurred while creating the payment order");
-  //     }
-  //   };
-
   useEffect(() => {
     getCustomers(setCustomers, refreshToken);
     getPurchaseOrders(setPurchaseOrders, refreshToken);
+    getSalesCategories(setSalesCategories, refreshToken);
   }, []);
 
   const invoiceAmount = salesDetailList.reduce((acc, curr) => {
-    acc += Number(curr.sellPrice);
+    acc += Number(curr.sellAmount);
     return acc;
   }, 0);
 
-  const totalInvoiceAmount = invoiceAmount - discount + vatAmt;
+  const totalInvoiceAmount = invoiceAmount - Number(discount) + Number(vatAmt);
 
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
@@ -103,34 +73,28 @@ const SalesEntryForm = () => {
     salesDetailList,
     setSalesEntryDetails
   ) => {
-    if (event.target.value === "") {
-      // {
-      //     id: 1,
-      //     poNumber: "",
-      //     poDate: "",
-      //     description1: "",
-      //     description2: "",
-      //     purchaseCost: "",
-      //     sellPrice: "",
-      //   };
-    }
     let [salesDetail] = salesDetailList.filter((e) => e.id === entry.id);
+    const value = JSON.parse(event.target.value);
     salesDetail =
       event.target.value === ""
         ? {
             ...salesDetail,
             ...{
+              id: 1,
               poNumber: "",
               poDate: "",
-              description1: "",
-              description2: "",
-              purchaseCost: "",
-              sellPrice: "",
+              description: "",
+              amount: "",
+              sellAmount: "",
             },
           }
         : {
             ...salesDetail,
-            ...event.target.value,
+            poNumber: value.id,
+            poDate: value.poDate,
+            description: value.description,
+            amount: value.amount,
+            sellAmount: value.sellAmount,
           };
     let newSalesDetailList = salesDetailList.map((e) => {
       if (e.id === entry.id) {
@@ -213,12 +177,14 @@ const SalesEntryForm = () => {
             className={`${inputStyle} cursor-pointer`}
             name="salesCat"
             id="salesCat"
-            onChange={(event) => handleInput(e, setSalesEntryDetails)}
+            onChange={(event) => handleInput(event, setSalesEntryDetails)}
           >
             <option value="">Select Sales Category</option>
-            <option value="UPI">UPI</option>
-            <option value="PHONEPE">PHONEPE</option>
-            <option value="PAYTM">PAYTM</option>
+            {salesCategories?.map((salesCategory) => (
+              <option value={salesCategory.category}>
+                {salesCategory.category}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -338,7 +304,7 @@ const SalesEntryForm = () => {
                   className="border-2 border-black rounded w-full outline-0 px-2 py-1"
                   type="text"
                   name="description1"
-                  value={entry.description1}
+                  value={entry.description}
                   disabled={true}
                 />
               </td>
@@ -347,7 +313,7 @@ const SalesEntryForm = () => {
                   className="border-2 border-black rounded w-full outline-0 px-2 py-1"
                   type="text"
                   name="purchaseCost"
-                  value={entry.purchaseCost}
+                  value={entry.amount}
                   disabled={true}
                 />
               </td>
@@ -356,7 +322,7 @@ const SalesEntryForm = () => {
                   className="border-2 border-black rounded w-full outline-0 px-2 py-1"
                   type="text"
                   name="sellPrice"
-                  value={entry.sellPrice}
+                  value={entry.sellAmount}
                   disabled={true}
                 />
               </td>
@@ -390,7 +356,14 @@ const SalesEntryForm = () => {
       <div className="flex justify-center gap-4">
         <button
           onClick={() =>
-            postPurchaseOrder(userId, customerId, salesEntryDetails)
+            postSalesEntry(
+              userId,
+              customerId,
+              salesEntryDetails,
+              setSalesEntryDetails,
+              initialState,
+              refreshToken
+            )
           }
           className="btn btn-sm btn-success px-4 py-2"
         >

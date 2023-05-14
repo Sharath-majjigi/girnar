@@ -1,4 +1,6 @@
+import { getPaymentTypes } from "@/services/paymentType";
 import { getPurchaseOrders } from "@/services/poh";
+import { getDateFormate } from "@/utils/date";
 import axios from "axios";
 import Router from "next/router";
 import React, { useEffect, useState } from "react";
@@ -20,9 +22,10 @@ const PaymentForm = () => {
   const [paymentDetails, setPaymentDetails] = useState(initialState);
   const [pohList, setPohList] = useState([]);
   const [pohDetails, setPohDetails] = useState("");
+  const [paymentTypes, setPaymentTypes] = useState(undefined);
 
   const { requests } = paymentDetails;
-  const { poDate, description, remarks, vendor, id } = pohDetails;
+  const { description, remarks, vendor } = pohDetails;
 
   let user;
   let userId;
@@ -42,6 +45,22 @@ const PaymentForm = () => {
   ) => {
     try {
       const { requests } = paymentDetails;
+      const isEmpty = requests.reduce((acc, curr) => {
+        if (
+          curr.amountPaid === 0 ||
+          curr.date === "" ||
+          curr.description === "" ||
+          curr.paymentType === ""
+        ) {
+          acc.push(true);
+          return acc;
+        }
+        acc.push(false);
+        return acc;
+      }, []);
+      if (pohId === "" || isEmpty.includes(true)) {
+        return toast.warn("Please fill all details");
+      }
       const newRequests = requests.map((entry) => {
         delete entry.id;
         return entry;
@@ -73,6 +92,7 @@ const PaymentForm = () => {
           description: "",
           remarks: "",
         });
+        Router.push("/payment");
         toast.success("Successfully created the payment order");
       }
     } catch (error) {
@@ -82,6 +102,7 @@ const PaymentForm = () => {
 
   useEffect(() => {
     getPurchaseOrders(setPohList, refreshToken);
+    getPaymentTypes(setPaymentTypes, refreshToken);
   }, []);
 
   const totalPoAmount = pohDetails?.pod?.reduce((acc, curr) => {
@@ -168,7 +189,17 @@ const PaymentForm = () => {
             id="poDate"
             className={`${inputStyle} cursor-pointer`}
             name="poDate"
-            value={poDate}
+            value={getDateFormate()}
+          />
+        </div>
+        <div>
+          <label htmlFor="userId">User Id:</label>
+          <input
+            type="text"
+            id="userId"
+            className={`${inputStyle} cursor-pointer`}
+            name="userId"
+            value={userId}
             disabled={true}
           />
         </div>
@@ -262,9 +293,9 @@ const PaymentForm = () => {
                   }
                 >
                   <option value="">Select Payment Type</option>
-                  <option value="UPI">UPI</option>
-                  <option value="PHONEPE">PHONEPE</option>
-                  <option value="PAYTM">PAYTM</option>
+                  {paymentTypes?.map((paymentType) => (
+                    <option value={paymentType.type}>{paymentType.type}</option>
+                  ))}
                 </select>
               </td>
               <td>

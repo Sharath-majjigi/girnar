@@ -18,9 +18,8 @@ const Navbar = () => {
             <li>Customer</li>
           </Link>
 
-          <Link href="/purchases">
+          <div>
             <button
-              // onClick={() => setPurchase(!purchase)}
               className="peer flex px-5  hover:bg-transparant-700 text-black"
             >
               Purchase
@@ -53,9 +52,9 @@ const Navbar = () => {
                 <Link href="/purchase">Purchase Order</Link>
               </li>
             </div>
-          </Link>
+          </div>
 
-          <Link href="/sales">
+          <div>
             <button className="peer flex px-5  hover:bg-transparant-700 text-black">
               {/* // onClick={() => setSales(!sales)} */}
               {/* // className="overflow-hidden  w-[14vh] flex justify-center items-center hover:cursor-pointer" */}
@@ -82,16 +81,16 @@ const Navbar = () => {
             flex-col bg-white drop-shadow-lg"
             >
               {/* className={`${dropdownOpen ? `top-full opacity-100 visible` : 'top-[110%] invisible opacity-0'} absolute left-0 z-40 mt-2 w-full rounded border-[.5px] border-light bg-white py-5 shadow-card transition-all`}> */}
-              <li href="/" className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/">Invoice</Link>
+              <li className="px-5 py-3 hover:bg-gray-200">
+                <Link href="/sales-entry">Invoice</Link>
               </li>
-              <li href=" " className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/salesReceipt">Receipt</Link>
+              <li className="px-5 py-3 hover:bg-gray-200">
+                <Link href="/sales-receipt">Receipt</Link>
               </li>
             </div>
-          </Link>
+          </div>
 
-          <Link href="/loyalty">
+          <div>
             <div className="peer flex px-5  hover:bg-transparant-700 text-black">
               Admin
               <svg
@@ -137,7 +136,7 @@ const Navbar = () => {
                 </Link>
               </li>
             </div>
-          </Link>
+          </div>
 
           {user ? (
             <li

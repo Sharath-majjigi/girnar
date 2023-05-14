@@ -1,13 +1,13 @@
 import { Link } from "components/Link";
 import { useEffect, useState } from "react";
-import { PurchaseModal } from "@/components";
-import { deletePurchaseOrder, getPurchaseOrders } from "@/services/poh";
+import { SalesReceiptModal } from "@/components";
+import { deleteSalesReceipt, getSalesReceipts } from "@/services/salesReceipt";
 
 const Index = () => {
-  const [poh, setPoh] = useState();
+  const [salesReceipts, setSalesReceipts] = useState();
   const [isModal, setIsModal] = useState(null);
   const [isDeleteModal, setIsDeleteModal] = useState(null);
-  
+
   let user;
   let refreshToken;
   if (typeof window !== "undefined") {
@@ -16,12 +16,14 @@ const Index = () => {
   }
 
   useEffect(() => {
-    getPurchaseOrders(setPoh, refreshToken);
+    getSalesReceipts(setSalesReceipts, refreshToken);
   }, []);
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-center my-6">PURCHASES</h2>
+      <h2 className="text-2xl font-semibold text-center mt-6 mb-10">
+        SALES RECEIPT DETAILS
+      </h2>
       <section className="flex justify-between px-4">
         <div className="flex items-center">
           <label htmlFor="simple-search" className="sr-only">
@@ -74,54 +76,35 @@ const Index = () => {
         </div>
 
         <Link
-          href="/purchase/add"
+          href="/sales-receipt/add"
           className="btn btn-sm no-underline btn-success px-4 py-1 text-lg"
         >
-          Add Purchase Order
+          Add Sales Receipt
         </Link>
       </section>
 
       <table className="table table-striped mt-4 mb-10">
         <thead>
           <tr>
-            <th className="w-1/4 text-center border-x-2">id</th>
-            <th className="w-1/4 text-center border-r-2">Vendor Name</th>
-            <th className="w-1/4 text-center border-r-2">PO Date</th>
-            <th className="w-1/4 border-r-2"></th>
+            <th className="text-center border-x-2">id</th>
+            <th className="text-center border-r-2">Description</th>
+            <th className="text-center border-r-2">Date</th>
+            <th className="text-center border-r-2">Amount Received</th>
+            <th className="border-r-2"></th>
           </tr>
         </thead>
         <tbody>
-          {poh?.map((user) => (
-            <tr key={user.id}>
-              {isModal === user.id && (
-                <PurchaseModal
-                  cancel={() => setIsModal(null)}
-                  purchaseDetails={user}
-                />
-              )}
-              {isDeleteModal === user.id && (
-                <PurchaseModal
-                  cancel={() => setIsDeleteModal(null)}
-                  isDelete={isDeleteModal}
-                  deleteUser={() =>
-                    deletePurchaseOrder(
-                      user.id,
-                      setPoh,
-                      refreshToken,
-                      getPurchaseOrders
-                    )
-                  }
-                  purchaseDetails={user}
-                />
-              )}
-              <td>{user.id}</td>
-              <td>{user.vendor.vendorName}</td>
-              <td>{user.poDate}</td>
+          {salesReceipts?.map((salesReceipt) => (
+            <tr key={salesReceipt.id}>
+              <td>{salesReceipt.id}</td>
+              <td>{salesReceipt?.description}</td>
+              <td>{salesReceipt.date}</td>
+              <td>{salesReceipt?.amountReceived}</td>
               <td className="flex justify-evenly">
                 <button
                   className="btn btn-sm btn-success px-3"
                   onClick={() => {
-                    setIsModal(user.id);
+                    setIsModal(salesReceipt.id,);
                   }}
                 >
                   View
@@ -134,30 +117,40 @@ const Index = () => {
                 </Link> */}
                 <button
                   onClick={() => {
-                    setIsDeleteModal(user.id);
+                    setIsDeleteModal(salesReceipt.id,);
                   }}
                   className="btn btn-sm btn-danger btn-delete-user px-3"
-                  disabled={user.isDeleting}
                 >
-                  {user.isDeleting ? (
-                    <span className="spinner-border spinner-border-sm"></span>
-                  ) : (
-                    <span>Delete</span>
-                  )}
+                  Delete
                 </button>
               </td>
+              {isModal === salesReceipt.id && (
+                <SalesReceiptModal
+                  cancel={() => setIsModal(null)}
+                  salesReceiptDetails={salesReceipt}
+                />
+              )}
+              {isDeleteModal === salesReceipt.id && (
+                <SalesReceiptModal
+                  cancel={() => setIsDeleteModal(null)}
+                  isDelete={isDeleteModal}
+                  deleteUser={() =>
+                    deleteSalesReceipt(
+                      salesReceipt.id,
+                      setSalesReceipts,
+                      refreshToken,
+                      getSalesReceipts
+                    )
+                  }
+                  salesReceiptDetails={salesReceipt}
+                />
+              )}
             </tr>
           ))}
-
-          {!poh && (
-            <tr>
-              <td colSpan="4" className="text-center">
-                <div className="spinner-border spinner-border-lg align-center"></div>
-              </td>
-            </tr>
-          )}
-          {poh && !poh.length && (
-            <div className="p-2 text-center text-xl"> No POH To Display</div>
+          {salesReceipts && !salesReceipts.length && (
+            <div className="p-2 text-center text-xl">
+              No Sales Receipts To Display
+            </div>
           )}
         </tbody>
       </table>

@@ -5,8 +5,8 @@ import { deleteCustomer, getCustomers } from "@/services/customer";
 
 const Index = () => {
   const [users, setUsers] = useState();
-  const [isModal, setIsModal] = useState(false);
-  const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [isModal, setIsModal] = useState(null);
+  const [isDeleteModal, setIsDeleteModal] = useState(null);
 
   let user;
   let refreshToken;
@@ -93,12 +93,12 @@ const Index = () => {
         <tbody>
           {users?.map((user) => (
             <tr key={user.id}>
-              {isModal && (
-                <UserModal cancel={() => setIsModal(false)} user={user} />
+              {isModal === user.id && (
+                <UserModal cancel={() => setIsModal(null)} user={user} />
               )}
-              {isDeleteModal && (
+              {isDeleteModal === user.id && (
                 <UserModal
-                  cancel={() => setIsDeleteModal(false)}
+                  cancel={() => setIsDeleteModal(null)}
                   isDelete={isDeleteModal}
                   deleteUser={() => deleteCustomer(user.id, setUsers, refreshToken)}
                   user={user}
@@ -111,7 +111,7 @@ const Index = () => {
                 <button
                   className="btn btn-sm btn-success px-3"
                   onClick={() => {
-                    setIsModal(true);
+                    setIsModal(user.id);
                   }}
                 >
                   View
@@ -124,7 +124,7 @@ const Index = () => {
                 </Link>
                 <button
                   onClick={() => {
-                    setIsDeleteModal(true);
+                    setIsDeleteModal(user.id);
                   }}
                   className="btn btn-sm btn-danger btn-delete-user px-3"
                   disabled={user.isDeleting}
