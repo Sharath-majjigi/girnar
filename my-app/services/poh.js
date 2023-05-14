@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const getPoh = async (setPoh, refreshToken) => {
+const getPurchaseOrders = async (setPoh, refreshToken) => {
   try {
     const res = await axios({
       method: "get",
@@ -16,20 +16,20 @@ const getPoh = async (setPoh, refreshToken) => {
   }
 };
 
-const deletePurchaseOrder = async (pid, setPoh, refreshToken, getPoh) => {
+const deletePurchaseOrder = async (purchaseOrderId, setPoh, refreshToken, getPurchaseOrders) => {
   try {
     const res = await axios({
       method: "delete",
-      url: `http://18.139.85.219:8088/api/v1/poh/${pid}`,
+      url: `http://18.139.85.219:8088/api/v1/poh/${purchaseOrderId}`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
     if (res.status === 200) {
       toast.success("Successfully deleted the purchase Order");
-      getPoh(setPoh, refreshToken);
+      getPurchaseOrders(setPoh, refreshToken);
     }
   } catch (error) {
     toast.error("Error occurred while deleting the purchase Order");
   }
 };
 
-export { getPoh, deletePurchaseOrder };
+export { getPurchaseOrders, deletePurchaseOrder };

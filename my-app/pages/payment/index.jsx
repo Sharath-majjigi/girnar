@@ -4,13 +4,12 @@ import { PaymentModal } from "@/components";
 import { deletePayment, getPayment } from "@/services/payments";
 
 const Index = () => {
-  const [payments, setPayments] = useState([]);
+  const [payments, setPayments] = useState(undefined);
   const [isModal, setIsModal] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [user, setUser] = useState(undefined);
   const [refreshToken, setRefreshToken] = useState(undefined);
 
-  console.log(payments);
   useEffect(() => {
     setUser(localStorage.getItem("user"));
     if (user !== undefined) {

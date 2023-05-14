@@ -1,9 +1,8 @@
 import Head from "next/head";
 import styles from "/styles/Home.module.css";
-import LoginFrom from "@/components/login/LoginForm";
+import { LoginFrom } from "@/components";
 
 export default function Home() {
- 
   return (
     <div className={styles.main}>
       <Head>
@@ -12,8 +11,7 @@ export default function Home() {
         <link rel="icon" href="/favcion.ico" />
       </Head>
 
-      <LoginFrom/>
-      
+      <LoginFrom />
     </div>
   );
 }

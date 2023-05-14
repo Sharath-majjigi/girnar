@@ -5,3 +5,5 @@ export { PurchaseForm } from "./purchase-form/PurchaseForm";
 export { PurchaseModal } from "./purchase-modal/PurchaseModal";
 export { PaymentForm } from "./payment-form/PaymentForm";
 export { PaymentModal } from "./payment-modal/PaymentModal";
+export { LoginForm } from "./login-form/LoginForm";
+export { SalesEntryForm } from "./sales-entry-form/SalesEntryForm";

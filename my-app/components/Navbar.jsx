@@ -8,7 +8,7 @@ const Navbar = () => {
 
   return (
     <>
-     <nav className="bg-blue-300 sticky top-0 list-none h-16 pt-4">
+      <nav className="bg-blue-300 sticky top-0 list-none h-16 pt-4">
         <div className="flex justify-center gap-2">
           <Link href="/vendor" className="pr-[10vh]">
             <li>Vendor</li>
@@ -47,10 +47,10 @@ const Navbar = () => {
             >
               {/* className={`${dropdownOpen ? `top-full opacity-100 visible` : 'top-[110%] invisible opacity-0'} absolute left-0 z-40 mt-2 w-full rounded border-[.5px] border-light bg-white py-5 shadow-card transition-all`}> */}
               <li href="/" className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/payment">Payment</Link>
+                <Link href="/payment">Payments</Link>
               </li>
               <li href=" " className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/payment/add">New PO</Link>
+                <Link href="/purchase">Purchase Order</Link>
               </li>
             </div>
           </Link>

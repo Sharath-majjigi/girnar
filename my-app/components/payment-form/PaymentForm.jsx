@@ -1,5 +1,6 @@
-import { getPoh } from "@/services/poh";
+import { getPurchaseOrders } from "@/services/poh";
 import axios from "axios";
+import Router from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -37,7 +38,7 @@ const PaymentForm = () => {
     pohId,
     paymentDetails,
     setPaymentDetails,
-    initialState
+    setPohDetails
   ) => {
     try {
       const { requests } = paymentDetails;
@@ -55,7 +56,23 @@ const PaymentForm = () => {
         },
       });
       if (res.status === 201) {
-        setPaymentDetails(initialState);
+        setPaymentDetails({
+          requests: [
+            {
+              amountPaid: 0,
+              date: "",
+              description: "",
+              paymentType: "",
+              id: 1,
+            },
+          ],
+        });
+        setPohDetails({
+          poDate: "",
+          vendor: { vendorName: "" },
+          description: "",
+          remarks: "",
+        });
         toast.success("Successfully created the payment order");
       }
     } catch (error) {
@@ -64,7 +81,7 @@ const PaymentForm = () => {
   };
 
   useEffect(() => {
-    getPoh(setPohList, refreshToken);
+    getPurchaseOrders(setPohList, refreshToken);
   }, []);
 
   const totalPoAmount = pohDetails?.pod?.reduce((acc, curr) => {
@@ -121,11 +138,11 @@ const PaymentForm = () => {
       </h1>
       <div className={containerStyle}>
         <div>
-          <label htmlFor="poh">PO Number:</label>
+          <label htmlFor="purchaseOrder">PO Number:</label>
           <select
             className={`${inputStyle} cursor-pointer`}
-            name="poh"
-            id="poh"
+            name="purchaseOrder"
+            id="purchaseOrder"
             onChange={(e) => {
               if (e.target.value === "") {
                 return setPohDetails({
@@ -306,17 +323,39 @@ const PaymentForm = () => {
               pohDetails.id,
               paymentDetails,
               setPaymentDetails,
-              initialState
+              setPohDetails
             )
           }
           className="btn btn-sm btn-success px-4 py-2"
         >
           SAVE
         </button>
-        {/* <button className="btn btn-sm btn-success px-4 py-2">Print PO</button>
-        <button className="btn btn-sm btn-success px-4 py-2">
-          Create Invoice
-        </button> */}
+
+        <button
+          className="border-2 border-red-500 text-red-500 rounded px-4 py-2"
+          onClick={() => {
+            setPaymentDetails({
+              requests: [
+                {
+                  amountPaid: 0,
+                  date: "",
+                  description: "",
+                  paymentType: "",
+                  id: 1,
+                },
+              ],
+            });
+            setPohDetails({
+              poDate: "",
+              vendor: { vendorName: "" },
+              description: "",
+              remarks: "",
+            });
+            Router.push("/payment");
+          }}
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );

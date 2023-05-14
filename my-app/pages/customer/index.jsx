@@ -1,8 +1,7 @@
 import { Link } from "components/Link";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { UserModal } from "@/components";
-import { toast } from "react-toastify";
+import { deleteCustomer, getCustomers } from "@/services/customer";
 
 const Index = () => {
   const [users, setUsers] = useState();
@@ -16,40 +15,8 @@ const Index = () => {
     refreshToken = JSON.parse(user)?.refresh_token;
   }
 
-  const getCustomers = async () => {
-    try {
-      const res = await axios({
-        method: "get",
-        url: "http://18.139.85.219:8088/api/v1/customer/",
-        headers: { authorization: `Bearer ${refreshToken}` },
-      });
-      console.log(res.data);
-      if (res.status === 200) {
-        setUsers(res.data);
-      }
-    } catch (error) {
-      toast.error("Error occurred while getting the customer list");
-    }
-  };
-
-  const deleteCustomer = async (id) => {
-    try {
-      const res = await axios({
-        method: "delete",
-        url: `http://18.139.85.219:8088/api/v1/customer/${id}`,
-        headers: { authorization: `Bearer ${refreshToken}` },
-      });
-      if (res.status === 200) {
-        toast.success("Successfully deleted the customer");
-        getCustomers();
-      }
-    } catch (error) {
-      toast.error("Error occurred while deleting the customer");
-    }
-  };
-
   useEffect(() => {
-    getCustomers();
+    getCustomers(setUsers, refreshToken);
   }, []);
 
   return (
@@ -133,7 +100,7 @@ const Index = () => {
                 <UserModal
                   cancel={() => setIsDeleteModal(false)}
                   isDelete={isDeleteModal}
-                  deleteUser={() => deleteCustomer(user.id)}
+                  deleteUser={() => deleteCustomer(user.id, setUsers, refreshToken)}
                   user={user}
                 />
               )}

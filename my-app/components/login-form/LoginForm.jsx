@@ -4,7 +4,7 @@ import Router from "next/router";
 import Image from "next/image";
 import axios from "axios";
 
-const LoginFrom = () => {
+const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -98,4 +98,4 @@ const LoginFrom = () => {
   );
 };
 
-export default LoginFrom;
+export { LoginForm };
