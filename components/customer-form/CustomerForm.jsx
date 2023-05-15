@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Router from "next/router";
@@ -52,11 +52,13 @@ const CustomerForm = ({ isEdit, id }) => {
     }
   };
 
+  const memorisedGetCustomerById = useCallback(getCustomerById, [getCustomerById])
+
   useEffect(() => {
     if (isEdit) {
-      getCustomerById(id);
+      memorisedGetCustomerById(id);
     }
-  }, [isEdit, id, getCustomerById]);
+  }, [isEdit, id, memorisedGetCustomerById]);
 
   let user;
   let refreshToken;
