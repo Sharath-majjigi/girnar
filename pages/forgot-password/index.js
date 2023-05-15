@@ -4,6 +4,10 @@ const Index = () => {
   const [user, setUser] = useState({ userId: "", email: "" });
   const { userId, email } = user;
 
+  const inputStyle =
+    "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
+  const containerStyle = "flex gap-6 flex-wrap justify-between w-3/4 mx-auto";
+
   return (
     <section>
       <div className={containerStyle}>
