@@ -162,7 +162,7 @@ const PurchaseForm = () => {
           >
             <option value="">Select Vendor</option>
             {vendors.map((vendor) => (
-              <option value={vendor.id}>{vendor.vendorName}</option>
+              <option key={vendor.id} value={vendor.id}>{vendor.vendorName}</option>
             ))}
           </select>
         </div>

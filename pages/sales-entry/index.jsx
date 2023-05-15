@@ -17,7 +17,7 @@ const Index = () => {
 
   useEffect(() => {
     getSalesEntries(setSalesEntries, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   return (
     <div>

@@ -17,7 +17,7 @@ const Index = () => {
 
   useEffect(() => {
     getPurchaseOrders(setPoh, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   return (
     <div>

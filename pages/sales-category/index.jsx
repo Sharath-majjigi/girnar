@@ -1,8 +1,9 @@
-import { deleteSalesCategory, getSalesCategories } from "@/services/salesCategory";
-import axios from "axios";
+import {
+  deleteSalesCategory,
+  getSalesCategories,
+} from "@/services/salesCategory";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 const Index = () => {
   const [salesCategories, setSalesCategories] = useState();
@@ -14,11 +15,9 @@ const Index = () => {
     refreshToken = JSON.parse(user)?.refresh_token;
   }
 
-  
-
   useEffect(() => {
     getSalesCategories(setSalesCategories, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   return (
     <>

@@ -2,7 +2,7 @@ import { postPaymentType } from "@/services/paymentType";
 import Router from "next/router";
 import React, { useState } from "react";
 
-const add = () => {
+const Add = () => {
   const [details, setDetails] = useState({
     type: "",
     description: "",
@@ -72,4 +72,4 @@ const add = () => {
   );
 };
 
-export default add;
+export default Add;

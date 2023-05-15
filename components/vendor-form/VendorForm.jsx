@@ -56,7 +56,7 @@ const VendorForm = ({ isEdit, id }) => {
     if (isEdit) {
       getVendorById(id);
     }
-  }, [isEdit, id]);
+  }, [isEdit, id, getVendorById]);
 
   let user;
   let refreshToken;

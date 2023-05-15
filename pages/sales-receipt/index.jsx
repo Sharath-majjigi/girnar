@@ -17,7 +17,7 @@ const Index = () => {
 
   useEffect(() => {
     getSalesReceipts(setSalesReceipts, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   return (
     <div>

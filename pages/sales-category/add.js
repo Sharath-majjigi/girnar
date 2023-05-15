@@ -1,10 +1,8 @@
 import { postSalesCategory } from "@/services/salesCategory";
-import axios from "axios";
 import Router from "next/router";
 import React, { useState } from "react";
-import { toast } from "react-toastify";
 
-const add = () => {
+const Add = () => {
   const [details, setDetails] = useState({
     category: "",
     description: "",
@@ -74,4 +72,4 @@ const add = () => {
   );
 };
 
-export default add;
+export default Add;

@@ -103,7 +103,7 @@ const PaymentForm = () => {
   useEffect(() => {
     getPurchaseOrders(setPohList, refreshToken);
     getPaymentTypes(setPaymentTypes, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   const totalPoAmount = pohDetails?.pod?.reduce((acc, curr) => {
     acc += Number(curr.purchaseCost);
@@ -178,7 +178,7 @@ const PaymentForm = () => {
           >
             <option value="">Select PO number</option>
             {pohList.map((poh) => (
-              <option value={JSON.stringify(poh)}>{poh.id}</option>
+              <option key={poh.id} value={JSON.stringify(poh)}>{poh.id}</option>
             ))}
           </select>
         </div>
@@ -294,7 +294,7 @@ const PaymentForm = () => {
                 >
                   <option value="">Select Payment Type</option>
                   {paymentTypes?.map((paymentType) => (
-                    <option value={paymentType.type}>{paymentType.type}</option>
+                    <option key={paymentType.type} value={paymentType.type}>{paymentType.type}</option>
                   ))}
                 </select>
               </td>

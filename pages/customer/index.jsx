@@ -17,7 +17,7 @@ const Index = () => {
 
   useEffect(() => {
     getCustomers(setUsers, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   return (
     <div>

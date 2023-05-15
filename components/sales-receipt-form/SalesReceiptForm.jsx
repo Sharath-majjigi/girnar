@@ -40,7 +40,7 @@ const SalesReceiptForm = () => {
   useEffect(() => {
     getSalesEntries(setSalesEntries, refreshToken);
     getPaymentTypes(setPaymentTypes, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   const totalPaid = requests.reduce((acc, curr) => {
     acc += Number(curr.amountReceived);
@@ -103,7 +103,7 @@ const SalesReceiptForm = () => {
           >
             <option value="">Select Invoice Number</option>
             {salesEntries.map((salesEntry) => (
-              <option value={JSON.stringify(salesEntry)}>
+              <option key={salesEntry.id} value={JSON.stringify(salesEntry)}>
                 {salesEntry.id}
               </option>
             ))}
@@ -234,7 +234,7 @@ const SalesReceiptForm = () => {
                 >
                   <option value="">Select Payment Type</option>
                   {paymentTypes?.map((paymentType) => (
-                    <option value={paymentType.type}>{paymentType.type}</option>
+                    <option key={paymentType.type} value={paymentType.type}>{paymentType.type}</option>
                   ))}
                 </select>
               </td>

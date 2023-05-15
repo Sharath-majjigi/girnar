@@ -56,7 +56,7 @@ const CustomerForm = ({ isEdit, id }) => {
     if (isEdit) {
       getCustomerById(id);
     }
-  }, [isEdit, id]);
+  }, [isEdit, id, getCustomerById]);
 
   let user;
   let refreshToken;

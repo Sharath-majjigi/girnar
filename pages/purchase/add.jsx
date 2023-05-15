@@ -1,8 +1,8 @@
 import { PurchaseForm } from "@/components";
 import React from "react";
 
-const add = () => {
+const Add = () => {
   return <PurchaseForm />;
 };
 
-export default add;
+export default Add;

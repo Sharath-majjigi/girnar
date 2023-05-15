@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const Index = () => {
   const [paymentTypes, setPaymentTypes] = useState();
-console.log(paymentTypes)
+
   let user;
   let refreshToken;
   if (typeof window !== "undefined") {
@@ -14,7 +14,7 @@ console.log(paymentTypes)
 
   useEffect(() => {
     getPaymentTypes(setPaymentTypes, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   return (
     <>

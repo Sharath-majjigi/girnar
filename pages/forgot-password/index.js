@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const index = () => {
+const Index = () => {
   const [user, setUser] = useState({ userId: "", email: "" });
   const { userId, email } = user;
 
@@ -38,4 +38,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;

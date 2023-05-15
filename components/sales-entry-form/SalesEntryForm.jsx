@@ -47,7 +47,7 @@ const SalesEntryForm = () => {
     getCustomers(setCustomers, refreshToken);
     getPurchaseOrders(setPurchaseOrders, refreshToken);
     getSalesCategories(setSalesCategories, refreshToken);
-  }, []);
+  }, [refreshToken]);
 
   const invoiceAmount = salesDetailList.reduce((acc, curr) => {
     acc += Number(curr.sellAmount);
@@ -167,7 +167,7 @@ const SalesEntryForm = () => {
           >
             <option value="">Select Customer</option>
             {customers.map((customer) => (
-              <option value={customer.id}>{customer.customerName}</option>
+              <option key={customer.id} value={customer.id}>{customer.customerName}</option>
             ))}
           </select>
         </div>
@@ -181,7 +181,7 @@ const SalesEntryForm = () => {
           >
             <option value="">Select Sales Category</option>
             {salesCategories?.map((salesCategory) => (
-              <option value={salesCategory.category}>
+              <option key={salesCategory.category} value={salesCategory.category}>
                 {salesCategory.category}
               </option>
             ))}
@@ -284,7 +284,7 @@ const SalesEntryForm = () => {
                 >
                   <option value="">Select PO number</option>
                   {purchaseOrders.map((purchaseOrder) => (
-                    <option value={JSON.stringify(purchaseOrder)}>
+                    <option key={purchaseOrder.id} value={JSON.stringify(purchaseOrder)}>
                       {purchaseOrder.id}
                     </option>
                   ))}
