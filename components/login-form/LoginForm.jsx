@@ -3,6 +3,7 @@ import styles from "styles/Login.module.css";
 import Router from "next/router";
 import Image from "next/image";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -23,11 +24,11 @@ const LoginForm = () => {
         const girnarUser = { access_token, refresh_token, role, userName, id };
         localStorage.setItem("user", JSON.stringify(girnarUser));
         Router.push("/vendor");
+        toast.success("logged in successfully");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Error while logging in");
     }
-    // dispatch(setUser({ access_token, refresh_token, role, userName, id }))
   };
 
   return (
@@ -66,7 +67,7 @@ const LoginForm = () => {
             placeholder="Email"
           />
         </div>
-        <div className="mb-6">
+        <div className="mb-2">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
             htmlFor="password"
@@ -76,11 +77,19 @@ const LoginForm = () => {
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="shadow appearance-none border border-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border border-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="password"
             type="password"
             placeholder="******************"
           />
+        </div>
+        <div className="text-right mb-3">
+          <small
+            className="cursor-pointer"
+            onClick={() => Router.push("/forgot-password")}
+          >
+            Forgot Password?
+          </small>
         </div>
         <div className="flex items-center flex-col flex-end  justify-between">
           <button

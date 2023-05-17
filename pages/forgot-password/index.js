@@ -1,3 +1,4 @@
+import Router from "next/router";
 import React, { useState } from "react";
 
 const Index = () => {
@@ -6,13 +7,18 @@ const Index = () => {
 
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
-  const containerStyle = "flex gap-6 flex-wrap justify-between w-3/4 mx-auto";
+  const containerStyle = "flex flex-col gap-6 justify-between w-fit mx-auto";
 
   return (
     <section>
+      <h2 className="text-2xl font-semibold w-fit mx-auto my-4">
+        Reset Password
+      </h2>
       <div className={containerStyle}>
         <div>
-          <label htmlFor="userId">User Id:</label>
+          <label htmlFor="userId" className="w-20">
+            User Id:
+          </label>
           <input
             type="text"
             id="userId"
@@ -25,7 +31,9 @@ const Index = () => {
           />
         </div>
         <div>
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="email" className="w-20">
+            Email:
+          </label>
           <input
             type="text"
             id="email"
@@ -37,6 +45,19 @@ const Index = () => {
             }
           />
         </div>
+      </div>
+      <div className="flex justify-center gap-4 mt-4">
+        <button className="btn btn-sm btn-success px-4 py-2" onClick={() => {}}>
+          Reset
+        </button>
+        <button
+          className="border-2 border-red-500 text-red-500 rounded px-4 py-2"
+          onClick={() => {
+            Router.push("/");
+          }}
+        >
+          Cancel
+        </button>
       </div>
     </section>
   );

@@ -10,8 +10,8 @@ const PurchaseForm = () => {
     description1: "",
     description2: "",
     paxName: "",
-    purchaseCost: 0,
-    sellPrice: 0,
+    purchaseCost: "",
+    sellPrice: "",
     id: 1,
   };
 
@@ -25,8 +25,13 @@ const PurchaseForm = () => {
   const [poDetails, setPoDetails] = useState(initialState);
   const [vendors, setVendors] = useState([]);
   const [vendorId, setVendorId] = useState("");
+  const [error, setError] = useState({
+    sellPriceError: [],
+    purchaseCostError: [],
+  });
 
   const { poDate, description, remarks, pod } = poDetails;
+  const { sellPriceError, purchaseCostError } = error;
 
   let user;
   let userId;
@@ -60,6 +65,9 @@ const PurchaseForm = () => {
         acc.push(false);
         return acc;
       }, []);
+      if (sellPriceError.length > 0 || purchaseCostError.length > 0) {
+        return toast.warn("Rectify errors before saving!");
+      }
       if (
         vendorId === "" ||
         remarks === "" ||
@@ -115,10 +123,53 @@ const PurchaseForm = () => {
 
   const handleEntryInput = (event, entry, pod, setPoDetails) => {
     let [newPod] = pod.filter((e) => e.id === entry.id);
-    newPod = {
-      ...newPod,
-      [event.target.name]: event.target.value,
-    };
+    if (event.target.name === "sellPrice") {
+      if (/^\d+$/.test(event.target.value)) {
+        if (sellPriceError) {
+          setError((prev) => ({
+            ...prev,
+            sellPriceError: [...prev.sellPriceError].filter(
+              (n) => n !== entry.id
+            ),
+          }));
+        }
+      } else {
+        setError((prev) => ({
+          ...prev,
+          sellPriceError: [...prev.sellPriceError, entry.id],
+        }));
+      }
+      newPod = {
+        ...newPod,
+        [event.target.name]: event.target.value,
+      };
+    } else if (event.target.name === "purchaseCost") {
+      if (/^\d+$/.test(event.target.value)) {
+        if (purchaseCostError) {
+          setError((prev) => ({
+            ...prev,
+            purchaseCostError: [...prev.purchaseCostError].filter(
+              (n) => n !== entry.id
+            ),
+          }));
+        }
+      } else {
+        setError((prev) => ({
+          ...prev,
+          purchaseCostError: [...prev.purchaseCostError, entry.id],
+        }));
+      }
+      newPod = {
+        ...newPod,
+        [event.target.name]: event.target.value,
+      };
+    } else {
+      newPod = {
+        ...newPod,
+        [event.target.name]: event.target.value,
+      };
+    }
+
     let podd = pod.map((e) => {
       if (e.id === entry.id) {
         return newPod;
@@ -162,7 +213,9 @@ const PurchaseForm = () => {
           >
             <option value="">Select Vendor</option>
             {vendors.map((vendor) => (
-              <option key={vendor.id} value={vendor.id}>{vendor.vendorName}</option>
+              <option key={vendor.id} value={vendor.id}>
+                {vendor.vendorName}
+              </option>
             ))}
           </select>
         </div>
@@ -290,6 +343,9 @@ const PurchaseForm = () => {
                     handleEntryInput(event, entry, pod, setPoDetails)
                   }
                 />
+                {purchaseCostError?.includes(entry.id) && (
+                  <p className="text-red-500">Enter only numbers</p>
+                )}
               </td>
               <td>
                 <input
@@ -301,6 +357,9 @@ const PurchaseForm = () => {
                     handleEntryInput(event, entry, pod, setPoDetails)
                   }
                 />
+                {sellPriceError?.includes(entry.id) && (
+                  <p className="text-red-500">Enter only numbers</p>
+                )}
               </td>
               <td className="flex justify-evenly">
                 {pod[pod.length - 1].id === entry.id && (

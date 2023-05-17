@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const PaymentForm = () => {
   const requestsInitialState = {
-    amountPaid: 0,
+    amountPaid: "",
     date: "",
     description: "",
     paymentType: "",
@@ -23,9 +23,13 @@ const PaymentForm = () => {
   const [pohList, setPohList] = useState([]);
   const [pohDetails, setPohDetails] = useState("");
   const [paymentTypes, setPaymentTypes] = useState(undefined);
+  const [error, setError] = useState({
+    amountPaidError: [],
+  });
 
   const { requests } = paymentDetails;
   const { description, remarks, vendor } = pohDetails;
+  const { amountPaidError } = error;
 
   let user;
   let userId;
@@ -58,6 +62,9 @@ const PaymentForm = () => {
         acc.push(false);
         return acc;
       }, []);
+      if (amountPaidError.length > 0) {
+        return toast.warn("Rectify errors before saving!");
+      }
       if (pohId === "" || isEmpty.includes(true)) {
         return toast.warn("Please fill all details");
       }
@@ -121,10 +128,32 @@ const PaymentForm = () => {
 
   const handleEntryInput = (event, entry, requests, setPaymentDetails) => {
     let [newRequest] = requests.filter((e) => e.id === entry.id);
-    newRequest = {
-      ...newRequest,
-      [event.target.name]: event.target.value,
-    };
+    if (event.target.name === "amountPaid") {
+      if (/^\d+$/.test(event.target.value)) {
+        if (amountPaidError) {
+          setError((prev) => ({
+            ...prev,
+            amountPaidError: [...prev.amountPaidError].filter(
+              (n) => n !== entry.id
+            ),
+          }));
+        }
+      } else {
+        setError((prev) => ({
+          ...prev,
+          amountPaidError: [...prev.amountPaidError, entry.id],
+        }));
+      }
+      newRequest = {
+        ...newRequest,
+        [event.target.name]: event.target.value,
+      };
+    } else {
+      newRequest = {
+        ...newRequest,
+        [event.target.name]: event.target.value,
+      };
+    }
     let newRequests = requests.map((e) => {
       if (e.id === entry.id) {
         return newRequest;
@@ -178,7 +207,9 @@ const PaymentForm = () => {
           >
             <option value="">Select PO number</option>
             {pohList.map((poh) => (
-              <option key={poh.id} value={JSON.stringify(poh)}>{poh.id}</option>
+              <option key={poh.id} value={JSON.stringify(poh)}>
+                {poh.id}
+              </option>
             ))}
           </select>
         </div>
@@ -294,7 +325,9 @@ const PaymentForm = () => {
                 >
                   <option value="">Select Payment Type</option>
                   {paymentTypes?.map((paymentType) => (
-                    <option key={paymentType.type} value={paymentType.type}>{paymentType.type}</option>
+                    <option key={paymentType.type} value={paymentType.type}>
+                      {paymentType.type}
+                    </option>
                   ))}
                 </select>
               </td>
@@ -319,6 +352,9 @@ const PaymentForm = () => {
                     handleEntryInput(event, entry, requests, setPaymentDetails)
                   }
                 />
+                {amountPaidError?.includes(entry.id) && (
+                  <p className="text-red-500">Enter numbers only</p>
+                )}
               </td>
               <td className="flex justify-evenly">
                 {requests[requests.length - 1].id === entry.id && (
