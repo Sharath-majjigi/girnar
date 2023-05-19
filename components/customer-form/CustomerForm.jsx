@@ -52,20 +52,20 @@ const CustomerForm = ({ isEdit, id }) => {
     }
   };
 
-  const memorisedGetCustomerById = useCallback(getCustomerById, [getCustomerById])
-
-  useEffect(() => {
-    if (isEdit) {
-      memorisedGetCustomerById(id);
-    }
-  }, [isEdit, id, memorisedGetCustomerById]);
-
   let user;
   let refreshToken;
   if (typeof window !== "undefined") {
     user = localStorage.getItem("user");
     refreshToken = JSON.parse(user)?.refresh_token;
   }
+
+  const memorizedGetCustomerById = useCallback(getCustomerById, [refreshToken]);
+
+  useEffect(() => {
+    if (isEdit) {
+      memorizedGetCustomerById(id);
+    }
+  }, [isEdit, id, memorizedGetCustomerById]);
 
   const handleInput = (e) => {
     setCustomer((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -280,7 +280,7 @@ const CustomerForm = ({ isEdit, id }) => {
       <div className="flex gap-2 justify-center">
         {isEdit ? (
           <button
-            className="px-6 py-1 border-2 border-black rounded"
+          className="px-6 py-1 text-white border-2 border-green-500 bg-green-500 rounded"
             onClick={() =>
               updateCustomer(
                 customer,

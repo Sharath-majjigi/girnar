@@ -34,7 +34,7 @@ const Navbar = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2"
+                  strokeLineWidth="2"
                   d="M19 9l-7 7-7-7"
                 ></path>
               </svg>
@@ -44,20 +44,17 @@ const Navbar = () => {
             w-[170px]
             flex-col bg-white drop-shadow-lg"
             >
-              {/* className={`${dropdownOpen ? `top-full opacity-100 visible` : 'top-[110%] invisible opacity-0'} absolute left-0 z-40 mt-2 w-full rounded border-[.5px] border-light bg-white py-5 shadow-card transition-all`}> */}
-              <li href="/" className="px-5 py-3 hover:bg-gray-200">
+              <li className="px-5 py-3 hover:bg-gray-200">
                 <Link href="/payment">Payments</Link>
               </li>
-              <li href=" " className="px-5 py-3 hover:bg-gray-200">
+              <li className="px-5 py-3 hover:bg-gray-200">
                 <Link href="/purchase">Purchase Order</Link>
               </li>
             </div>
           </div>
 
           <div>
-            <button className="peer flex px-5  hover:bg-transparant-700 text-black">
-              {/* // onClick={() => setSales(!sales)} */}
-              {/* // className="overflow-hidden  w-[14vh] flex justify-center items-center hover:cursor-pointer" */}
+            <button className="peer flex px-5  hover:bg-transparent-700 text-black">
               Sales
               <svg
                 className="w-4  h-5 pt-1 bg-transparent ml-2"
@@ -70,7 +67,7 @@ const Navbar = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2"
+                  strokeLineWidth="2"
                   d="M19 9l-7 7-7-7"
                 ></path>
               </svg>
@@ -80,7 +77,6 @@ const Navbar = () => {
             w-[150px]
             flex-col bg-white drop-shadow-lg"
             >
-              {/* className={`${dropdownOpen ? `top-full opacity-100 visible` : 'top-[110%] invisible opacity-0'} absolute left-0 z-40 mt-2 w-full rounded border-[.5px] border-light bg-white py-5 shadow-card transition-all`}> */}
               <li className="px-5 py-3 hover:bg-gray-200">
                 <Link href="/sales-entry">Invoice</Link>
               </li>
@@ -91,7 +87,7 @@ const Navbar = () => {
           </div>
 
           <div>
-            <div className="peer flex px-5  hover:bg-transparant-700 text-black">
+            <div className="peer flex px-5  hover:bg-transparent-700 text-black">
               Admin
               <svg
                 className="w-4 h-4 bg-transparent ml-2"
@@ -104,7 +100,7 @@ const Navbar = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2"
+                  strokeLineWidth="2"
                   d="M19 9l-7 7-7-7"
                 ></path>
               </svg>
@@ -114,24 +110,23 @@ const Navbar = () => {
             w-[150px]
             flex-col bg-white drop-shadow-lg"
             >
-              {/* className={`${dropdownOpen ? `top-full opacity-100 visible` : 'top-[110%] invisible opacity-0'} absolute left-0 z-40 mt-2 w-full rounded border-[.5px] border-light bg-white py-5 shadow-card transition-all`}> */}
-              <li href="/" className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/" onClick={() => setAdmin(!admin)}>
+              <li className="px-5 py-3 hover:bg-gray-200">
+                <Link href="/sales-category">
                   Sales Category
                 </Link>
               </li>
-              <li href=" " className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/salesReceipt" onClick={() => setAdmin(!sales)}>
+              <li className="px-5 py-3 hover:bg-gray-200">
+                <Link href="/payment-type" >
                   Payment Type
                 </Link>
               </li>
-              <li href=" " className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/loyalty" onClick={() => setAdmin(!admin)}>
+              <li className="px-5 py-3 hover:bg-gray-200">
+                <Link href="/loyalty">
                   Loyalty Point
                 </Link>
               </li>
-              <li href=" " className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/reedeemloyalty" onClick={() => setAdmin(!admin)}>
+              <li className="px-5 py-3 hover:bg-gray-200">
+                <Link href="/reedeemloyalty">
                   Reedem Loyalty Point
                 </Link>
               </li>
@@ -143,13 +138,13 @@ const Navbar = () => {
               className="cursor-pointer"
               onClick={() => {
                 localStorage.clear();
-                Router.push("/login");
+                Router.push("/");
               }}
             >
               Logout
             </li>
           ) : (
-            <Link href="/login">
+            <Link href="/">
               <li>Login</li>
             </Link>
           )}

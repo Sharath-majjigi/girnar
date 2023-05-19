@@ -51,13 +51,6 @@ const VendorForm = ({ isEdit, id }) => {
       toast.error("error occurred while getting vendor data by id");
     }
   };
-  const memorisedGetVendorById = useCallback(getVendorById, [getVendorById])
-
-  useEffect(() => {
-    if (isEdit) {
-      memorisedGetVendorById(id);
-    }
-  }, [isEdit, id, memorisedGetVendorById]);
 
   let user;
   let refreshToken;
@@ -65,8 +58,17 @@ const VendorForm = ({ isEdit, id }) => {
     user = localStorage.getItem("user");
     refreshToken = JSON.parse(user)?.refresh_token;
   }
+  
+  const memorizedGetVendorById = useCallback(getVendorById, [refreshToken])
+
+  useEffect(() => {
+    if (isEdit) {
+      memorizedGetVendorById(id);
+    }
+  }, [isEdit, id, memorizedGetVendorById]);
 
   const handleInput = (e) => {
+    console.log('here')
     setVendor((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
