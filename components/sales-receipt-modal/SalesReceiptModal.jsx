@@ -7,7 +7,7 @@ const SalesReceiptModal = ({
   deleteUser,
 }) => {
   const labelStyle = "w-32 font-semibold";
-  console.log(salesReceiptDetails);
+  
   return (
     <>
       <div className="absolute inset-0 bg-slate-200 opacity-30"></div>

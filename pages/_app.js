@@ -19,7 +19,7 @@ export default function App({ Component, pageProps }) {
       </Head>
       <main className="app-container">
         {r.asPath !== "/" && r.asPath !== "/forgot-password" && <Navbar />}
-        <Component {...pageProps} />;
+        <Component {...pageProps} />
         <ToastContainer />
       </main>
     </>

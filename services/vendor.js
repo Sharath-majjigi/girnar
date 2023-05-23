@@ -1,14 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-let user;
-let refreshToken;
-if (typeof window !== "undefined") {
-  user = localStorage.getItem("user");
-  refreshToken = JSON.parse(user)?.refresh_token;
-}
-
-const getVendors = async (setUsers) => {
+const getVendors = async (setUsers, refreshToken) => {
   try {
     const res = await axios({
       method: "get",
@@ -23,16 +16,17 @@ const getVendors = async (setUsers) => {
   }
 };
 
-const deleteVendor = async (id, getVendors) => {
+const deleteVendor = async (id, getVendors, refreshToken, setUsers) => {
   try {
     const res = await axios({
       method: "delete",
       url: `http://18.139.85.219:8088/api/v1/vendor/${id}`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
+    console.log(res)
     if (res.status === 200) {
       toast.success("Successfully deleted the vendor");
-      getVendors();
+      getVendors(setUsers, refreshToken);
     }
   } catch (error) {
     toast.error("Error occurred while deleting the vendor");

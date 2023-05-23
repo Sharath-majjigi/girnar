@@ -90,7 +90,7 @@ const SalesReceiptForm = () => {
   return (
     <div>
       <h1 className="text-3xl font-medium text-center mt-4 mb-8">
-        Sales Entry Form
+        Sales Receipt Form
       </h1>
       <div className={containerStyle}>
         <div>
