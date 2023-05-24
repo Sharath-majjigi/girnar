@@ -1,3 +1,4 @@
+import { BASE_URL } from "@/services/api_base_url";
 import axios from "axios";
 import Router from "next/router";
 import React, { useState } from "react";
@@ -18,8 +19,7 @@ const Index = () => {
     try {
       const res = await axios({
         method: "patch",
-        url: "http://18.139.85.219:8088/api/v1/user/change-password",
-        // headers: { authorization: `Bearer ${refreshToken}` },
+        url: `${BASE_URL}user/change-password`,
         data: {
           ...user,
         },
