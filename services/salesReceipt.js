@@ -1,12 +1,13 @@
 import axios from "axios";
 import Router from "next/router";
 import { toast } from "react-toastify";
+import { BASE_URL } from "./api_base_url";
 
 const getSalesReceipts = async (setSalesReceipts, refreshToken) => {
   try {
     const res = await axios({
       method: "get",
-      url: "http://18.139.85.219:8088/api/v1/sales-receipt/all",
+      url: `${BASE_URL}sales-receipt/all`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
     if (res.status === 200) {
@@ -54,7 +55,7 @@ const postSalesReceipt = async (
     };
     const res = await axios({
       method: "post",
-      url: `http://18.139.85.219:8088/api/v1/sales-receipt/${userId}/${salesEntryId}`,
+      url: `${BASE_URL}sales-receipt/${userId}/${salesEntryId}`,
       headers: { authorization: `Bearer ${refreshToken}` },
       data: {
         ...details,
@@ -86,7 +87,7 @@ const deleteSalesReceipt = async (
   try {
     const res = await axios({
       method: "delete",
-      url: `http://18.139.85.219:8088/api/v1/sales-receipt/${salesReceiptId}`,
+      url: `${BASE_URL}sales-receipt/${salesReceiptId}`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
     if (res.status === 200) {

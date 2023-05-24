@@ -1,3 +1,4 @@
+import { BASE_URL } from "@/services/api_base_url";
 import { getPaymentTypes } from "@/services/paymentType";
 import { getPurchaseOrders } from "@/services/poh";
 import { getDateFormate } from "@/utils/date";
@@ -75,7 +76,7 @@ const PaymentForm = () => {
       const details = { ...paymentDetails, requests: newRequests };
       const res = await axios({
         method: "post",
-        url: `http://18.139.85.219:8088/api/v1/pop/${userId}/${pohId}`,
+        url: `${BASE_URL}pop/${userId}/${pohId}`,
         headers: { authorization: `Bearer ${refreshToken}` },
         data: {
           ...details,

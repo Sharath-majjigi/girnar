@@ -10,7 +10,6 @@ const Index = () => {
     email: "",
   });
   const { confirmPassword, password, email } = user;
-
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
   const containerStyle = "flex flex-col gap-6 justify-between w-fit mx-auto";
@@ -25,7 +24,7 @@ const Index = () => {
           ...user,
         },
       });
-      console.log(res);
+      
       if (res.status === 200) {
         toast.success("Password changed successfully");
         Router.push("/");
@@ -95,7 +94,7 @@ const Index = () => {
               password &&
               email &&
               confirmPassword &&
-              password !== confirmPassword
+              password === confirmPassword
             ) {
               handleResetPassword();
             } else {

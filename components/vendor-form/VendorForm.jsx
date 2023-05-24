@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Router from "next/router";
+import { BASE_URL } from "@/services/api_base_url";
 
 const VendorForm = ({ isEdit, id }) => {
   const initialState = {
@@ -39,7 +40,7 @@ const VendorForm = ({ isEdit, id }) => {
     try {
       const response = await axios({
         method: "get",
-        url: `http://18.139.85.219:8088/api/v1/vendor/${id}`,
+        url: `${BASE_URL}vendor/${id}`,
         headers: { authorization: `Bearer ${refreshToken}` },
       });
       if (response.status === 200) {
@@ -68,7 +69,6 @@ const VendorForm = ({ isEdit, id }) => {
   }, [isEdit, id, memorizedGetVendorById]);
 
   const handleInput = (e) => {
-    console.log('here')
     setVendor((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -79,7 +79,7 @@ const VendorForm = ({ isEdit, id }) => {
       } else {
         const response = await axios({
           method: "post",
-          url: "http://18.139.85.219:8088/api/v1/vendor",
+          url: `${BASE_URL}vendor`,
           headers: { authorization: `Bearer ${refreshToken}` },
           data: {
             ...vendor,
@@ -109,7 +109,7 @@ const VendorForm = ({ isEdit, id }) => {
       } else {
         const response = await axios({
           method: "put",
-          url: `http://18.139.85.219:8088/api/v1/vendor/${id}`,
+          url: `${BASE_URL}vendor/${id}`,
           headers: { authorization: `Bearer ${refreshToken}` },
           data: {
             ...vendor,

@@ -1,5 +1,5 @@
 import { getPaymentTypes } from "@/services/paymentType";
-import { getSalesEntries, postSalesEntry } from "@/services/salesEntry";
+import { getSalesEntries } from "@/services/salesEntry";
 import { postSalesReceipt } from "@/services/salesReceipt";
 import { getDateFormate } from "@/utils/date";
 import Router from "next/router";

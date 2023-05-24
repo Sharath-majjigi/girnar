@@ -1,11 +1,12 @@
 import axios from "axios";
 import { toast } from "react-toastify";
+import { BASE_URL } from "./api_base_url";
 
 const getPurchaseOrders = async (setPoh, refreshToken) => {
   try {
     const res = await axios({
       method: "get",
-      url: "http://18.139.85.219:8088/api/v1/poh/",
+      url: `${BASE_URL}poh/`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
     if (res.status === 200) {
@@ -20,7 +21,7 @@ const deletePurchaseOrder = async (purchaseOrderId, setPoh, refreshToken, getPur
   try {
     const res = await axios({
       method: "delete",
-      url: `http://18.139.85.219:8088/api/v1/poh/${purchaseOrderId}`,
+      url: `${BASE_URL}poh/${purchaseOrderId}`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
     if (res.status === 200) {

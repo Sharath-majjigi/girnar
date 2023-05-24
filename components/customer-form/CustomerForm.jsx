@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Router from "next/router";
+import { BASE_URL } from "@/services/api_base_url";
 
 const CustomerForm = ({ isEdit, id }) => {
   const initialState = {
@@ -39,7 +40,7 @@ const CustomerForm = ({ isEdit, id }) => {
     try {
       const response = await axios({
         method: "get",
-        url: `http://18.139.85.219:8088/api/v1/customer/${id}`,
+        url: `${BASE_URL}customer/${id}`,
         headers: { authorization: `Bearer ${refreshToken}` },
       });
       if (response.status === 200) {
@@ -83,7 +84,7 @@ const CustomerForm = ({ isEdit, id }) => {
       } else {
         const response = await axios({
           method: "post",
-          url: "http://18.139.85.219:8088/api/v1/customer",
+          url: `${BASE_URL}customer`,
           headers: { authorization: `Bearer ${refreshToken}` },
           data: {
             ...customer,
@@ -113,7 +114,7 @@ const CustomerForm = ({ isEdit, id }) => {
       } else {
         const response = await axios({
           method: "put",
-          url: `http://18.139.85.219:8088/api/v1/customer/${id}`,
+          url: `${BASE_URL}customer/${id}`,
           headers: { authorization: `Bearer ${refreshToken}` },
           data: {
             ...customer,

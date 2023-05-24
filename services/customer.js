@@ -1,11 +1,12 @@
 import axios from "axios";
 import { toast } from "react-toastify";
+import { BASE_URL } from "./api_base_url";
 
 const getCustomers = async (setUsers, refreshToken) => {
   try {
     const res = await axios({
       method: "get",
-      url: "http://18.139.85.219:8088/api/v1/customer/",
+      url: `${BASE_URL}customer/`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
 
@@ -21,7 +22,7 @@ const deleteCustomer = async (customerId, setUsers, refreshToken) => {
   try {
     const res = await axios({
       method: "delete",
-      url: `http://18.139.85.219:8088/api/v1/customer/${customerId}`,
+      url: `${BASE_URL}customer/${customerId}`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
     if (res.status === 200) {

@@ -4,6 +4,7 @@ import Router from "next/router";
 import Image from "next/image";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { BASE_URL } from "@/services/api_base_url";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ const LoginForm = () => {
     try {
       event.preventDefault();
       const response = await axios.post(
-        "http://18.139.85.219:8088/api/v1/user/authenticate",
+        `${BASE_URL}user/authenticate`,
         {
           email,
           password,

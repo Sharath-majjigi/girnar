@@ -1,12 +1,13 @@
 import axios from "axios";
 import Router from "next/router";
 import { toast } from "react-toastify";
+import { BASE_URL } from "./api_base_url";
 
 const getSalesCategories = async (setSalesCategories, refreshToken) => {
   try {
     const res = await axios({
       method: "get",
-      url: "http://18.139.85.219:8088/api/v1/sales-category/",
+      url: `${BASE_URL}sales-category/`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
 
@@ -22,7 +23,7 @@ const postSalesCategory = async (details, refreshToken) => {
     try {
       const res = await axios({
         method: "post",
-        url: `http://18.139.85.219:8088/api/v1/sales-category/`,
+        url: `${BASE_URL}sales-category/`,
         headers: { authorization: `Bearer ${refreshToken}` },
         data: {
           ...details,
@@ -46,7 +47,7 @@ const deleteSalesCategory = async (
   try {
     const res = await axios({
       method: "delete",
-      url: `http://18.139.85.219:8088/api/v1/sales-category/${type}`,
+      url: `${BASE_URL}sales-category/${type}`,
       headers: { authorization: `Bearer ${refreshToken}` },
     });
     if (res.status === 200) {

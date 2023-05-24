@@ -8,7 +8,7 @@ const Index = () => {
   const [searchText, setSearchText] = useState("");
   const [isModal, setIsModal] = useState(null);
   const [isDeleteModal, setIsDeleteModal] = useState(null);
-  console.log(searchText)
+  
   let user;
   let refreshToken;
   if (typeof window !== "undefined") {

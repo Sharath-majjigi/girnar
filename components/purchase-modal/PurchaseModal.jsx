@@ -2,7 +2,7 @@ import React from "react";
 
 const PurchaseModal = ({ purchaseDetails, cancel, isDelete, deleteUser }) => {
   const labelStyle = "w-32 font-semibold";
-  console.log(purchaseDetails);
+  
   return (
     <>
       <div className="absolute inset-0 bg-slate-200 opacity-70"></div>

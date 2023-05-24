@@ -1,3 +1,4 @@
+import { BASE_URL } from "@/services/api_base_url";
 import { getVendors } from "@/services/vendor";
 import { getDateFormate } from "@/utils/date";
 import axios from "axios";
@@ -83,7 +84,7 @@ const PurchaseForm = () => {
       const details = { ...poDetails, pod: newPod };
       const res = await axios({
         method: "post",
-        url: `http://18.139.85.219:8088/api/v1/poh/${userId}/${vendorId}`,
+        url: `${BASE_URL}poh/${userId}/${vendorId}`,
         headers: { authorization: `Bearer ${refreshToken}` },
         data: {
           ...details,
