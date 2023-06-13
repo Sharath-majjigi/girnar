@@ -121,12 +121,22 @@ const Index = () => {
                 >
                   View
                 </button>
-                {/* <Link
-                  href={`/customer/edit/${user.id}`}
+                <Link
+                  href={`/sales-entry/edit/${salesEntry.id}`}
                   className="btn btn-sm btn-primary px-3"
                 >
                   Edit
-                </Link> */}
+                </Link>
+                <a
+                  href={`http://192.168.1.20:8080/jasperserver/flow.html?_flowId=viewReportFlow&reportUnit=%2FGirnar_Sales%2Finvoice&j_username=${
+                    JSON.parse(user)?.userName
+                  }&j_password=${localStorage.getItem(
+                    "token"
+                  )}&output=pdf&invoice_number=${salesEntry?.id}`}
+                  className="btn btn-sm btn-primary px-3"
+                >
+                  Print Invoice
+                </a>
                 <button
                   onClick={() => {
                     setIsDeleteModal(salesEntry.id);

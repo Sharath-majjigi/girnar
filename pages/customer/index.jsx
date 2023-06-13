@@ -73,10 +73,11 @@ const Index = () => {
       <table className="table table-striped mt-4 mb-10">
         <thead>
           <tr>
-            <th className="w-1/4 text-center border-x-2">id</th>
-            <th className="w-1/4 text-center border-r-2">Name</th>
-            <th className="w-1/4 text-center border-r-2">Telephone</th>
-            <th className="w-1/4 border-r-2"></th>
+            <th className="text-center border-x-2">id</th>
+            <th className="text-center border-r-2">Name</th>
+            <th className="text-center border-r-2">Telephone</th>
+            <th className="text-center border-r-2">Notes</th>
+            <th className="w-72 border-r-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -98,6 +99,7 @@ const Index = () => {
               <td>{user.id}</td>
               <td>{user.customerName}</td>
               <td>{user.telephone}</td>
+              <td>{user.notes}</td>
               <td className="flex justify-evenly">
                 <button
                   className="btn btn-sm btn-success px-3"

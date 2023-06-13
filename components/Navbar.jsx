@@ -19,9 +19,7 @@ const Navbar = () => {
           </Link>
 
           <div>
-            <button
-              className="peer flex px-5  hover:bg-transparant-700 text-black"
-            >
+            <button className="peer flex px-5  hover:bg-transparant-700 text-black">
               Purchase
               <svg
                 className="w-4 h-4 bg-transparent ml-2"
@@ -45,10 +43,10 @@ const Navbar = () => {
             flex-col bg-white drop-shadow-lg"
             >
               <li className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/payment">Payments</Link>
+                <Link href="/purchase">Purchase Order</Link>
               </li>
               <li className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/purchase">Purchase Order</Link>
+                <Link href="/payment">Payments</Link>
               </li>
             </div>
           </div>
@@ -111,24 +109,16 @@ const Navbar = () => {
             flex-col bg-white drop-shadow-lg"
             >
               <li className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/sales-category">
-                  Sales Category
-                </Link>
+                <Link href="/sales-category">Sales Category</Link>
               </li>
               <li className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/payment-type" >
-                  Payment Type
-                </Link>
+                <Link href="/payment-type">Payment Type</Link>
               </li>
               <li className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/loyalty">
-                  Loyalty Point
-                </Link>
+                <Link href="/loyalty">Loyalty Point</Link>
               </li>
               <li className="px-5 py-3 hover:bg-gray-200">
-                <Link href="/reedeemloyalty">
-                  Reedem Loyalty Point
-                </Link>
+                <Link href="/reedeemloyalty">Reedem Loyalty Point</Link>
               </li>
             </div>
           </div>

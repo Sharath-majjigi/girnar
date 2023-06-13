@@ -115,12 +115,13 @@ const Index = () => {
                 >
                   View
                 </button>
-                {/* <Link
-                  href={`/customer/edit/${user.id}`}
+                <Link
+                  href={`/purchase/edit/${user.id}`}
                   className="btn btn-sm btn-primary px-3"
+                  onClick={() => {}}
                 >
                   Edit
-                </Link> */}
+                </Link>
                 <button
                   onClick={() => {
                     setIsDeleteModal(user.id);

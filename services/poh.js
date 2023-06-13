@@ -16,8 +16,27 @@ const getPurchaseOrders = async (setPoh, refreshToken) => {
     toast.error("Error occurred while getting the POH list");
   }
 };
+const getPurchaseOrdersNotInSales = async (setPoh, refreshToken) => {
+  try {
+    const res = await axios({
+      method: "get",
+      url: `${BASE_URL}poh/not-in-sales`,
+      headers: { authorization: `Bearer ${refreshToken}` },
+    });
+    if (res.status === 200) {
+      setPoh(res.data);
+    }
+  } catch (error) {
+    toast.error("Error occurred while getting the POH list");
+  }
+};
 
-const deletePurchaseOrder = async (purchaseOrderId, setPoh, refreshToken, getPurchaseOrders) => {
+const deletePurchaseOrder = async (
+  purchaseOrderId,
+  setPoh,
+  refreshToken,
+  getPurchaseOrders
+) => {
   try {
     const res = await axios({
       method: "delete",
@@ -33,4 +52,4 @@ const deletePurchaseOrder = async (purchaseOrderId, setPoh, refreshToken, getPur
   }
 };
 
-export { getPurchaseOrders, deletePurchaseOrder };
+export { getPurchaseOrders, deletePurchaseOrder, getPurchaseOrdersNotInSales };

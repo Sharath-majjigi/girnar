@@ -3,10 +3,10 @@ import { getVendors } from "@/services/vendor";
 import { getDateFormate } from "@/utils/date";
 import axios from "axios";
 import Router from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const PurchaseForm = () => {
+const PurchaseForm = ({ isEdit, id }) => {
   const podInitialState = {
     description1: "",
     description2: "",
@@ -42,6 +42,32 @@ const PurchaseForm = () => {
     refreshToken = JSON.parse(user)?.refresh_token;
     userId = JSON.parse(user)?.id;
   }
+
+  const getPurchaseById = async (id) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${BASE_URL}poh/${id}`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+      });
+      if (response.status === 200) {
+        const data = response.data;
+        delete data.id;
+        setPoDetails({ ...data });
+        setVendorId(data.vendor.id);
+      }
+    } catch (error) {
+      toast.error("error occurred while getting purchase order data by id");
+    }
+  };
+
+  const memorizedGetPurchaseById = useCallback(getPurchaseById, [refreshToken]);
+
+  useEffect(() => {
+    if (isEdit) {
+      memorizedGetPurchaseById(id);
+    }
+  }, [isEdit, id, memorizedGetPurchaseById]);
 
   const postPurchaseOrder = async (
     userId,
@@ -91,18 +117,74 @@ const PurchaseForm = () => {
         },
       });
       if (res.status === 200) {
+        Router.push("/purchase");
         setPoDetails(initialState);
         toast.success("Successfully created the purchase order");
-        Router.push("/purchase");
       }
     } catch (error) {
       toast.error("Error occurred while creating the purchase order");
     }
   };
+  const postPurchaseOrderUpdate = async (
+    vendorId,
+    poDetails,
+    setPoDetails,
+    initialState
+  ) => {
+    try {
+      const { description, remarks, pod } = poDetails;
+      const isEmpty = pod.reduce((acc, curr) => {
+        if (
+          curr.description1 === "" ||
+          curr.description2 === "" ||
+          curr.paxName === "" ||
+          curr.purchaseCost === 0 ||
+          curr.sellPrice === 0
+        ) {
+          acc.push(true);
+          return acc;
+        }
+        acc.push(false);
+        return acc;
+      }, []);
+      if (sellPriceError.length > 0 || purchaseCostError.length > 0) {
+        return toast.warn("Rectify errors before saving!");
+      }
+      if (
+        vendorId === "" ||
+        remarks === "" ||
+        description === "" ||
+        isEmpty.includes(true)
+      ) {
+        return toast.warn("Please fill all details");
+      }
+      delete poDetails.vendor;
+      delete poDetails.vendorName;
+      delete poDetails.sellAmount;
+      delete poDetails.amount;
+      delete poDetails.user;
+      const details = { ...poDetails };
+      const res = await axios({
+        method: "put",
+        url: `${BASE_URL}poh/${id}/update`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+        data: {
+          ...details,
+        },
+      });
+      if (res.status === 200) {
+        Router.push("/purchase");
+        setPoDetails(initialState);
+        toast.success("Successfully updated the purchase order");
+      }
+    } catch (error) {
+      toast.error("Error occurred while updating the purchase order");
+    }
+  };
 
   useEffect(() => {
-    getVendors(setVendors);
-  }, []);
+    getVendors(setVendors, refreshToken);
+  }, [refreshToken]);
 
   const totalPoAmount = poDetails?.pod?.reduce((acc, curr) => {
     acc += Number(curr.purchaseCost);
@@ -207,9 +289,11 @@ const PurchaseForm = () => {
         <div>
           <label htmlFor="vendorId">Vendor:</label>
           <select
-            className={`${inputStyle} cursor-pointer`}
+            className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
             name="vendorId"
             id="vendorId"
+            value={vendorId}
+            disabled={isEdit ? true : false}
             onChange={(e) => setVendorId(e.target.value)}
           >
             <option value="">Select Vendor</option>
@@ -236,7 +320,7 @@ const PurchaseForm = () => {
           <input
             type="text"
             id="userId"
-            className={`${inputStyle} cursor-pointer`}
+            className={`${inputStyle}`}
             name="userId"
             value={userId}
             disabled={true}
@@ -295,7 +379,7 @@ const PurchaseForm = () => {
             <th className="text-center border-r-2">Description 2</th>
             <th className="text-center border-r-2">Purchase Cost</th>
             <th className="text-center border-r-2">Sell Price</th>
-            <th className="border-r-2"></th>
+            {!isEdit && <th className="border-r-2"></th>}
           </tr>
         </thead>
         <tbody>
@@ -362,43 +446,61 @@ const PurchaseForm = () => {
                   <p className="text-red-500">Enter only numbers</p>
                 )}
               </td>
-              <td className="flex justify-evenly">
-                {pod[pod.length - 1].id === entry.id && (
-                  <button
-                    className="btn btn-sm btn-success px-3"
-                    onClick={() => addNewEntry(setPoDetails, podInitialState)}
-                  >
-                    Add
-                  </button>
-                )}
-                {pod.length > 1 && (
-                  <button
-                    onClick={() => deleteEntry(entry, pod, setPoDetails)}
-                    className="btn btn-sm btn-danger btn-delete-user px-3"
-                  >
-                    Delete
-                  </button>
-                )}
-              </td>
+              {!isEdit && (
+                <td className="flex justify-evenly">
+                  {pod[pod.length - 1].id === entry.id && (
+                    <button
+                      className="btn btn-sm btn-success px-3"
+                      onClick={() => addNewEntry(setPoDetails, podInitialState)}
+                    >
+                      Add
+                    </button>
+                  )}
+                  {pod.length > 1 && (
+                    <button
+                      onClick={() => deleteEntry(entry, pod, setPoDetails)}
+                      className="btn btn-sm btn-danger btn-delete-user px-3"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
       <div className="flex justify-center gap-4">
-        <button
-          onClick={() =>
-            postPurchaseOrder(
-              userId,
-              vendorId,
-              poDetails,
-              setPoDetails,
-              initialState
-            )
-          }
-          className="btn btn-sm btn-success px-4 py-2"
-        >
-          SAVE
-        </button>
+        {isEdit ? (
+          <button
+            onClick={() =>
+              postPurchaseOrderUpdate(
+                vendorId,
+                poDetails,
+                setPoDetails,
+                initialState
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Update
+          </button>
+        ) : (
+          <button
+            onClick={() =>
+              postPurchaseOrder(
+                userId,
+                vendorId,
+                poDetails,
+                setPoDetails,
+                initialState
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Save
+          </button>
+        )}
         <button className="btn btn-sm btn-success px-4 py-2">Print PO</button>
         <button className="btn btn-sm btn-success px-4 py-2">
           Create Invoice

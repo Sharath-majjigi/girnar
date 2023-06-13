@@ -4,10 +4,10 @@ import { getPurchaseOrders } from "@/services/poh";
 import { getDateFormate } from "@/utils/date";
 import axios from "axios";
 import Router from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const PaymentForm = () => {
+const PaymentForm = ({ isEdit, id }) => {
   const requestsInitialState = {
     amountPaid: "",
     date: "",
@@ -40,6 +40,40 @@ const PaymentForm = () => {
     refreshToken = JSON.parse(user)?.refresh_token;
     userId = JSON.parse(user)?.id;
   }
+
+  const getPaymentById = async (id) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${BASE_URL}pop/${id}`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+      });
+      if (response.status === 200) {
+        const data = response.data;
+        setPaymentDetails({
+          requests: [
+            {
+              amountPaid: data.amountPaid,
+              date: data.date,
+              description: data.description,
+              paymentType: data.paymentType,
+              id: data.id,
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      toast.error("error occurred while getting Payment details by id");
+    }
+  };
+
+  const memorizedGetPaymentById = useCallback(getPaymentById, [refreshToken]);
+
+  useEffect(() => {
+    if (isEdit) {
+      memorizedGetPaymentById(id);
+    }
+  }, [isEdit, id, memorizedGetPaymentById]);
 
   const postPaymentOrder = async (
     userId,
@@ -83,6 +117,7 @@ const PaymentForm = () => {
         },
       });
       if (res.status === 201) {
+        Router.push("/payment");
         setPaymentDetails({
           requests: [
             {
@@ -100,11 +135,70 @@ const PaymentForm = () => {
           description: "",
           remarks: "",
         });
-        Router.push("/payment");
         toast.success("Successfully created the payment order");
       }
     } catch (error) {
       toast.error("Error occurred while creating the payment order");
+    }
+  };
+
+  const postPaymentOrderUpdate = async (
+    pohId,
+    paymentDetails,
+    setPaymentDetails,
+    setPohDetails
+  ) => {
+    try {
+      const { requests } = paymentDetails;
+      const isEmpty = requests.reduce((acc, curr) => {
+        if (
+          curr.amountPaid === 0 ||
+          curr.date === "" ||
+          curr.description === "" ||
+          curr.paymentType === ""
+        ) {
+          acc.push(true);
+          return acc;
+        }
+        acc.push(false);
+        return acc;
+      }, []);
+      if (amountPaidError.length > 0) {
+        return toast.warn("Rectify errors before saving!");
+      }
+      if (pohId === "" || isEmpty.includes(true)) {
+        return toast.warn("Please fill all details");
+      }
+      const details = requests;
+      const res = await axios({
+        method: "put",
+        url: `${BASE_URL}pop/update`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+        data: details,
+      });
+      if (res.status === 200) {
+        Router.push("/payment");
+        setPaymentDetails({
+          requests: [
+            {
+              amountPaid: 0,
+              date: "",
+              description: "",
+              paymentType: "",
+              id: 1,
+            },
+          ],
+        });
+        setPohDetails({
+          poDate: "",
+          vendor: { vendorName: "" },
+          description: "",
+          remarks: "",
+        });
+        toast.success("Successfully updated the payment order");
+      }
+    } catch (error) {
+      toast.error("Error occurred while updating the payment order");
     }
   };
 
@@ -118,7 +212,7 @@ const PaymentForm = () => {
     return acc;
   }, 0);
 
-  const totalPaid = requests.reduce((acc, curr) => {
+  const totalPaid = requests?.reduce((acc, curr) => {
     acc += Number(curr.amountPaid);
     return acc;
   }, 0);
@@ -191,7 +285,7 @@ const PaymentForm = () => {
         <div>
           <label htmlFor="purchaseOrder">PO Number:</label>
           <select
-            className={`${inputStyle} cursor-pointer`}
+            className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
             name="purchaseOrder"
             id="purchaseOrder"
             onChange={(e) => {
@@ -205,6 +299,7 @@ const PaymentForm = () => {
               }
               setPohDetails(JSON.parse(e.target.value));
             }}
+            disabled={isEdit ? true : false}
           >
             <option value="">Select PO number</option>
             {pohList.map((poh) => (
@@ -219,9 +314,10 @@ const PaymentForm = () => {
           <input
             type="date"
             id="poDate"
-            className={`${inputStyle} cursor-pointer`}
+            className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
             name="poDate"
             value={getDateFormate()}
+            disabled={isEdit ? true : false}
           />
         </div>
         <div>
@@ -229,7 +325,7 @@ const PaymentForm = () => {
           <input
             type="text"
             id="userId"
-            className={`${inputStyle} cursor-pointer`}
+            className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
             name="userId"
             value={userId}
             disabled={true}
@@ -280,7 +376,7 @@ const PaymentForm = () => {
           />
         </div>
         <div>
-          <label htmlFor="totalSellPrice">Toatal Paid:</label>
+          <label htmlFor="totalSellPrice">Total Paid:</label>
           <input
             type="text"
             id="totalPaid"
@@ -323,6 +419,7 @@ const PaymentForm = () => {
                   onChange={(event) =>
                     handleEntryInput(event, entry, requests, setPaymentDetails)
                   }
+                  value={entry.paymentType}
                 >
                   <option value="">Select Payment Type</option>
                   {paymentTypes?.map((paymentType) => (
@@ -364,6 +461,7 @@ const PaymentForm = () => {
                     onClick={() =>
                       addNewEntry(setPaymentDetails, requestsInitialState)
                     }
+                    disabled={isEdit ? true : false}
                   >
                     Add
                   </button>
@@ -384,20 +482,36 @@ const PaymentForm = () => {
         </tbody>
       </table>
       <div className="flex justify-center gap-4">
-        <button
-          onClick={() =>
-            postPaymentOrder(
-              userId,
-              pohDetails.id,
-              paymentDetails,
-              setPaymentDetails,
-              setPohDetails
-            )
-          }
-          className="btn btn-sm btn-success px-4 py-2"
-        >
-          SAVE
-        </button>
+        {isEdit ? (
+          <button
+            onClick={() =>
+              postPaymentOrderUpdate(
+                pohDetails.id,
+                paymentDetails,
+                setPaymentDetails,
+                setPohDetails
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Update
+          </button>
+        ) : (
+          <button
+            onClick={() =>
+              postPaymentOrder(
+                userId,
+                pohDetails.id,
+                paymentDetails,
+                setPaymentDetails,
+                setPohDetails
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Save
+          </button>
+        )}
 
         <button
           className="border-2 border-red-500 text-red-500 rounded px-4 py-2"

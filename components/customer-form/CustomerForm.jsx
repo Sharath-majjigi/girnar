@@ -191,17 +191,6 @@ const CustomerForm = ({ isEdit, id }) => {
         {postCodeError && <p className="text-red-500">Enter only numbers</p>}
       </div>
       <div className={containerStyle}>
-        <label htmlFor="country">Country</label>
-        <input
-          type="text"
-          id="country"
-          className={inputStyle}
-          name="country"
-          value={country}
-          onChange={(e) => handleInput(e)}
-        />
-      </div>
-      <div className={containerStyle}>
         <label htmlFor="city">City</label>
         <input
           type="text"
@@ -209,6 +198,17 @@ const CustomerForm = ({ isEdit, id }) => {
           className={inputStyle}
           name="city"
           value={city}
+          onChange={(e) => handleInput(e)}
+        />
+      </div>
+      <div className={containerStyle}>
+        <label htmlFor="country">Country</label>
+        <input
+          type="text"
+          id="country"
+          className={inputStyle}
+          name="country"
+          value={country}
           onChange={(e) => handleInput(e)}
         />
       </div>
@@ -281,7 +281,7 @@ const CustomerForm = ({ isEdit, id }) => {
       <div className="flex gap-2 justify-center">
         {isEdit ? (
           <button
-          className="px-6 py-1 text-white border-2 border-green-500 bg-green-500 rounded"
+            className="px-6 py-1 text-white border-2 border-green-500 bg-green-500 rounded"
             onClick={() =>
               updateCustomer(
                 customer,

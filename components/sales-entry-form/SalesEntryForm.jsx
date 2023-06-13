@@ -1,11 +1,15 @@
 import { getCustomers } from "@/services/customer";
-import { getPurchaseOrders } from "@/services/poh";
+import { getPurchaseOrdersNotInSales } from "@/services/poh";
 import { getSalesCategories } from "@/services/salesCategory";
+import { BASE_URL } from "@/services/api_base_url";
 import { postSalesEntry } from "@/services/salesEntry";
 import { getDateFormate } from "@/utils/date";
-import React, { useEffect, useState } from "react";
+import axios from "axios";
+import React, { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Router from "next/router";
 
-const SalesEntryForm = () => {
+const SalesEntryForm = ({ isEdit, id }) => {
   const seInitialState = {
     id: 1,
     poNumber: "",
@@ -30,9 +34,17 @@ const SalesEntryForm = () => {
   const [customerId, setCustomerId] = useState("");
   const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [salesCategories, setSalesCategories] = useState(undefined);
+  const [firstEffect, setFirstEffect] = useState(false);
 
-  const { date, description, discount, message, salesDetailList, vatAmt } =
-    salesEntryDetails;
+  const {
+    date,
+    description,
+    discount,
+    message,
+    salesDetailList,
+    vatAmt,
+    salesCat,
+  } = salesEntryDetails;
 
   let user;
   let userId;
@@ -43,14 +55,49 @@ const SalesEntryForm = () => {
     userId = JSON.parse(user)?.id;
   }
 
+  const getSalesEntryById = async (id) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${BASE_URL}sales-header/${id}`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+      });
+      if (response.status === 200) {
+        const data = response?.data;
+        delete data.id;
+        const { salesDetailList: list } = data;
+        const detailList = list?.map((e) => {
+          const ddd = purchaseOrders?.find((ee) => ee.id === e.poNumber);
+          return { ...ddd, _id: e.id, poNumber: ddd?.id };
+        });
+        setSalesEntryDetails({ ...data, salesDetailList: detailList });
+        setCustomerId(data.customer.id);
+      }
+    } catch (error) {
+      toast.error("error occurred while getting sales entry by id");
+    }
+  };
+
+  const memorizedGetSalesEntryById = useCallback(getSalesEntryById, [
+    refreshToken,
+    purchaseOrders,
+  ]);
+
   useEffect(() => {
     getCustomers(setCustomers, refreshToken);
-    getPurchaseOrders(setPurchaseOrders, refreshToken);
+    getPurchaseOrdersNotInSales(setPurchaseOrders, refreshToken);
     getSalesCategories(setSalesCategories, refreshToken);
+    setFirstEffect(true);
   }, [refreshToken]);
 
+  useEffect(() => {
+    if (isEdit && firstEffect) {
+      memorizedGetSalesEntryById(id);
+    }
+  }, [isEdit, id, firstEffect, memorizedGetSalesEntryById]);
+
   const invoiceAmount = salesDetailList.reduce((acc, curr) => {
-    acc += Number(curr.sellAmount);
+    acc += Number(curr?.sellAmount);
     return acc;
   }, 0);
 
@@ -74,9 +121,13 @@ const SalesEntryForm = () => {
     setSalesEntryDetails
   ) => {
     let [salesDetail] = salesDetailList.filter((e) => e.id === entry.id);
-    const value = JSON.parse(event.target.value);
+    const newId = event.target.value;
+    let value;
+    if (newId) {
+      [value] = purchaseOrders.filter((e) => e.id === newId);
+    }
     salesDetail =
-      event.target.value === ""
+      newId === ""
         ? {
             ...salesDetail,
             ...{
@@ -129,6 +180,60 @@ const SalesEntryForm = () => {
     }));
   };
 
+  const postSalesEntryUpdate = async (
+    customerId,
+    salesEntryDetails,
+    setSalesEntryDetails,
+    initialState,
+    refreshToken
+  ) => {
+    try {
+      const { salesDetailList, description, date, vatAmt, salesCat, message } =
+        salesEntryDetails;
+      const isEmpty = salesDetailList.reduce((acc, curr) => {
+        if (curr.poNumber === "") {
+          acc.push(true);
+          return acc;
+        }
+        acc.push(false);
+        return acc;
+      }, []);
+      if (
+        customerId === "" ||
+        isEmpty.includes(true) ||
+        date === "" ||
+        description === "" ||
+        message === "" ||
+        salesCat === "" ||
+        vatAmt === 0
+      ) {
+        return toast.warn("Please fill all details");
+      }
+      const newSalesDetailList = salesDetailList.map((entry) => {
+        return { poNumber: entry.poNumber, id: entry._id };
+      });
+      const details = {
+        ...salesEntryDetails,
+        salesDetailList: newSalesDetailList,
+      };
+      const res = await axios({
+        method: "put",
+        url: `${BASE_URL}sales-header/${id}`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+        data: {
+          ...details,
+        },
+      });
+      if (res.status === 200) {
+        Router.push("/sales-entry");
+        setSalesEntryDetails(initialState);
+        toast.success("Successfully updated the sales entry");
+      }
+    } catch (error) {
+      toast.error("Error occurred while updating the sales entry");
+    }
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-medium text-center mt-4 mb-8">
@@ -163,11 +268,14 @@ const SalesEntryForm = () => {
             className={`${inputStyle} cursor-pointer`}
             name="customerId"
             id="customerId"
+            value={customerId}
             onChange={(e) => setCustomerId(e.target.value)}
           >
             <option value="">Select Customer</option>
             {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>{customer.customerName}</option>
+              <option key={customer.id} value={customer.id}>
+                {customer.customerName}
+              </option>
             ))}
           </select>
         </div>
@@ -177,11 +285,15 @@ const SalesEntryForm = () => {
             className={`${inputStyle} cursor-pointer`}
             name="salesCat"
             id="salesCat"
+            value={salesCat}
             onChange={(event) => handleInput(event, setSalesEntryDetails)}
           >
             <option value="">Select Sales Category</option>
             {salesCategories?.map((salesCategory) => (
-              <option key={salesCategory.category} value={salesCategory.category}>
+              <option
+                key={salesCategory.category}
+                value={salesCategory.category}
+              >
                 {salesCategory.category}
               </option>
             ))}
@@ -267,7 +379,7 @@ const SalesEntryForm = () => {
         </thead>
         <tbody>
           {salesDetailList?.map((entry) => (
-            <tr key={entry.id}>
+            <tr key={entry?.id}>
               <td>
                 <select
                   className={`${inputStyle} cursor-pointer`}
@@ -281,10 +393,11 @@ const SalesEntryForm = () => {
                       setSalesEntryDetails
                     );
                   }}
+                  value={entry?.poNumber}
                 >
                   <option value="">Select PO number</option>
                   {purchaseOrders.map((purchaseOrder) => (
-                    <option key={purchaseOrder.id} value={JSON.stringify(purchaseOrder)}>
+                    <option key={purchaseOrder.id} value={purchaseOrder.id}>
                       {purchaseOrder.id}
                     </option>
                   ))}
@@ -295,7 +408,7 @@ const SalesEntryForm = () => {
                   className="border-2 border-black rounded w-full outline-0 px-2 py-1"
                   type="text"
                   name="poDate"
-                  value={entry.poDate}
+                  value={entry?.poDate}
                   disabled={true}
                 />
               </td>
@@ -304,7 +417,7 @@ const SalesEntryForm = () => {
                   className="border-2 border-black rounded w-full outline-0 px-2 py-1"
                   type="text"
                   name="description1"
-                  value={entry.description}
+                  value={entry?.description}
                   disabled={true}
                 />
               </td>
@@ -313,7 +426,7 @@ const SalesEntryForm = () => {
                   className="border-2 border-black rounded w-full outline-0 px-2 py-1"
                   type="text"
                   name="purchaseCost"
-                  value={entry.amount}
+                  value={entry?.amount}
                   disabled={true}
                 />
               </td>
@@ -322,18 +435,19 @@ const SalesEntryForm = () => {
                   className="border-2 border-black rounded w-full outline-0 px-2 py-1"
                   type="text"
                   name="sellPrice"
-                  value={entry.sellAmount}
+                  value={entry?.sellAmount}
                   disabled={true}
                 />
               </td>
               <td className="flex justify-evenly">
-                {salesDetailList[salesDetailList.length - 1].id ===
-                  entry.id && (
+                {salesDetailList[salesDetailList.length - 1]?.id ===
+                  entry?.id && (
                   <button
                     className="btn btn-sm btn-success px-3"
                     onClick={() =>
                       addNewEntry(setSalesEntryDetails, seInitialState)
                     }
+                    disabled={isEdit ? true : false}
                   >
                     Add
                   </button>
@@ -354,24 +468,38 @@ const SalesEntryForm = () => {
         </tbody>
       </table>
       <div className="flex justify-center gap-4">
-        <button
-          onClick={() =>
-            postSalesEntry(
-              userId,
-              customerId,
-              salesEntryDetails,
-              setSalesEntryDetails,
-              initialState,
-              refreshToken
-            )
-          }
-          className="btn btn-sm btn-success px-4 py-2"
-        >
-          SAVE
-        </button>
-        <button className="btn btn-sm btn-success px-4 py-2">
-          Print Invoice
-        </button>
+        {isEdit ? (
+          <button
+            onClick={() =>
+              postSalesEntryUpdate(
+                customerId,
+                salesEntryDetails,
+                setSalesEntryDetails,
+                initialState,
+                refreshToken
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Update
+          </button>
+        ) : (
+          <button
+            onClick={() =>
+              postSalesEntry(
+                userId,
+                customerId,
+                salesEntryDetails,
+                setSalesEntryDetails,
+                initialState,
+                refreshToken
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Save
+          </button>
+        )}
       </div>
     </div>
   );

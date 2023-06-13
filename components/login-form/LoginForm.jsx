@@ -24,6 +24,7 @@ const LoginForm = () => {
       if (response.status === 200) {
         const girnarUser = { access_token, refresh_token, role, userName, id };
         localStorage.setItem("user", JSON.stringify(girnarUser));
+        localStorage.setItem("token", password);
         Router.push("/vendor");
         toast.success("logged in successfully");
       }

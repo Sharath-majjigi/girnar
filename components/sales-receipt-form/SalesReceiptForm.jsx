@@ -302,7 +302,7 @@ const SalesReceiptForm = () => {
           }
           className="btn btn-sm btn-success px-4 py-2"
         >
-          SAVE
+          Save
         </button>
         <button
           className="border-2 border-red-500 text-red-500 rounded px-4 py-2"
