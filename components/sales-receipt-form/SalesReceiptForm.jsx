@@ -1,11 +1,14 @@
+import { BASE_URL } from "@/services/api_base_url";
 import { getPaymentTypes } from "@/services/paymentType";
 import { getSalesEntries } from "@/services/salesEntry";
 import { postSalesReceipt } from "@/services/salesReceipt";
 import { getDateFormate } from "@/utils/date";
+import axios from "axios";
 import Router from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const SalesReceiptForm = () => {
+const SalesReceiptForm = ({ isEdit, id }) => {
   const srInitialState = {
     id: 1,
     amountReceived: 0,
@@ -15,7 +18,7 @@ const SalesReceiptForm = () => {
   };
 
   const initialState = {
-    date:  getDateFormate(),
+    date: getDateFormate(),
     requests: [srInitialState],
   };
 
@@ -25,8 +28,15 @@ const SalesReceiptForm = () => {
   const [paymentTypes, setPaymentTypes] = useState(undefined);
 
   const { date, requests } = salesReceiptDetails;
-  const { customer, salesCat, description, message, totalInvoiceAmt } =
-    salesEntry;
+  const {
+    id: salesEntryId,
+    customer,
+    salesCat,
+    description,
+    message,
+    totalInvoiceAmt,
+  } = salesEntry;
+  const { receiptType } = requests[0];
 
   let user;
   let userId;
@@ -37,12 +47,42 @@ const SalesReceiptForm = () => {
     userId = JSON.parse(user)?.id;
   }
 
+  const getSalesReceiptById = async (id) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${BASE_URL}sales-receipt/${id}`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+      });
+      if (response.status === 200) {
+        const data = response?.data;
+        setSalesEntry(data.salesHeader);
+        const date = data.salesHeader.date;
+        delete data.salesHeader;
+        delete data.user;
+        setSalesReceiptDetails({ date, requests: [data] });
+      }
+    } catch (error) {
+      toast.error("error occurred while getting sales receipt by id");
+    }
+  };
+
+  const memorizedGetSalesReceiptById = useCallback(getSalesReceiptById, [
+    refreshToken,
+  ]);
+
   useEffect(() => {
     getSalesEntries(setSalesEntries, refreshToken);
     getPaymentTypes(setPaymentTypes, refreshToken);
   }, [refreshToken]);
 
-  const totalPaid = requests.reduce((acc, curr) => {
+  useEffect(() => {
+    if (isEdit) {
+      memorizedGetSalesReceiptById(id);
+    }
+  }, [isEdit, id, memorizedGetSalesReceiptById]);
+
+  const totalPaid = requests?.reduce((acc, curr) => {
     acc += Number(curr.amountReceived);
     return acc;
   }, 0);
@@ -66,6 +106,11 @@ const SalesReceiptForm = () => {
     setSalesReceiptDetails((prev) => ({ ...prev, requests: newRequests }));
   };
 
+  const setSalesEntryHandle = (id) => {
+    const details = salesEntries.find((entry) => entry.id === id);
+    setSalesEntry(details);
+  };
+
   const addNewEntry = (setSalesReceiptDetails, srInitialState) => {
     setSalesReceiptDetails((prev) => ({
       ...prev,
@@ -87,6 +132,56 @@ const SalesReceiptForm = () => {
     }));
   };
 
+  const postSalesReceiptUpdate = async (
+    salesEntryId,
+    salesReceiptDetails,
+    setSalesReceiptDetails,
+    initialState,
+    refreshToken,
+    setSalesEntry
+  ) => {
+    try {
+      const { requests, date } = salesReceiptDetails;
+      const isEmpty = requests.reduce((acc, curr) => {
+        if (
+          curr.amountReceived === 0 ||
+          curr.date === "" ||
+          curr.description === "" ||
+          curr.receiptType === ""
+        ) {
+          acc.push(true);
+          return acc;
+        }
+        acc.push(false);
+        return acc;
+      }, []);
+      if (salesEntryId === "" || isEmpty.includes(true) || date === "") {
+        return toast.warn("Please fill all details");
+      }
+
+      const res = await axios({
+        method: "put",
+        url: `${BASE_URL}sales-receipt/update`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+        data: requests,
+      });
+      if (res.status === 200) {
+        setSalesReceiptDetails(initialState);
+        setSalesEntry({
+          customer: { customerName: "" },
+          salesCat: "",
+          description: "",
+          message: "",
+          totalInvoiceAmt: 0,
+        });
+        Router.push("/sales-receipt");
+        toast.success("Successfully update the sales receipt");
+      }
+    } catch (error) {
+      toast.error("Error occurred while updating the sales receipt");
+    }
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-medium text-center mt-4 mb-8">
@@ -99,11 +194,13 @@ const SalesReceiptForm = () => {
             className={`${inputStyle} cursor-pointer`}
             name="salesEntriesId"
             id="salesEntriesId"
-            onChange={(e) => setSalesEntry(JSON.parse(e.target.value))}
+            onChange={(e) => setSalesEntryHandle(e.target.value)}
+            value={salesEntryId}
+            disabled={isEdit ? true : false}
           >
             <option value="">Select Invoice Number</option>
             {salesEntries.map((salesEntry) => (
-              <option key={salesEntry.id} value={JSON.stringify(salesEntry)}>
+              <option key={salesEntry.id} value={salesEntry.id}>
                 {salesEntry.id}
               </option>
             ))}
@@ -117,6 +214,7 @@ const SalesReceiptForm = () => {
             className={`${inputStyle} cursor-pointer`}
             name="date"
             value={date}
+            disabled={isEdit ? true : false}
             onChange={(e) => handleInput(e, setSalesReceiptDetails)}
           />
         </div>
@@ -161,6 +259,7 @@ const SalesReceiptForm = () => {
             className={inputStyle}
             name="description"
             value={description}
+            disabled={isEdit ? true : false}
             onChange={(e) => handleInput(e, setSalesReceiptDetails)}
           />
         </div>
@@ -172,6 +271,7 @@ const SalesReceiptForm = () => {
             className={inputStyle}
             name="message"
             value={message}
+            disabled={isEdit ? true : false}
             onChange={(e) => handleInput(e, setSalesReceiptDetails)}
           />
         </div>
@@ -231,10 +331,13 @@ const SalesReceiptForm = () => {
                   onChange={(e) =>
                     handleEntryInput(e, entry, requests, setSalesReceiptDetails)
                   }
+                  value={receiptType}
                 >
                   <option value="">Select Payment Type</option>
                   {paymentTypes?.map((paymentType) => (
-                    <option key={paymentType.type} value={paymentType.type}>{paymentType.type}</option>
+                    <option key={paymentType.type} value={paymentType.type}>
+                      {paymentType.type}
+                    </option>
                   ))}
                 </select>
               </td>
@@ -267,6 +370,7 @@ const SalesReceiptForm = () => {
                     onClick={() =>
                       addNewEntry(setSalesReceiptDetails, srInitialState)
                     }
+                    disabled={isEdit ? true : false}
                   >
                     Add
                   </button>
@@ -276,6 +380,7 @@ const SalesReceiptForm = () => {
                     onClick={() =>
                       deleteEntry(entry, requests, setSalesReceiptDetails)
                     }
+                    disabled={isEdit ? true : false}
                     className="btn btn-sm btn-danger btn-delete-user px-3"
                   >
                     Delete
@@ -288,22 +393,40 @@ const SalesReceiptForm = () => {
       </table>
 
       <div className="flex justify-center gap-4">
-        <button
-          onClick={() =>
-            postSalesReceipt(
-              userId,
-              salesEntry.id,
-              salesReceiptDetails,
-              setSalesReceiptDetails,
-              initialState,
-              refreshToken,
-              setSalesEntry
-            )
-          }
-          className="btn btn-sm btn-success px-4 py-2"
-        >
-          Save
-        </button>
+        {isEdit ? (
+          <button
+            onClick={() =>
+              postSalesReceiptUpdate(
+                salesEntry.id,
+                salesReceiptDetails,
+                setSalesReceiptDetails,
+                initialState,
+                refreshToken,
+                setSalesEntry
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Update
+          </button>
+        ) : (
+          <button
+            onClick={() =>
+              postSalesReceipt(
+                userId,
+                salesEntry.id,
+                salesReceiptDetails,
+                setSalesReceiptDetails,
+                initialState,
+                refreshToken,
+                setSalesEntry
+              )
+            }
+            className="btn btn-sm btn-success px-4 py-2"
+          >
+            Save
+          </button>
+        )}
         <button
           className="border-2 border-red-500 text-red-500 rounded px-4 py-2"
           onClick={() => {
