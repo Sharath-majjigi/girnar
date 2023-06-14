@@ -41,11 +41,12 @@ const LoginForm = () => {
         method="Post"
       >
         <div className="flex flex-col py-9">
-          <Image
+          <img
             src="/girnar_circle_white.png"
             alt="Picture of the author"
-            width={100}
-            height={100}
+            // width={100}
+            // height={100}
+            style={{width: '5rem', height: '5rem'}}
           />
 
           <h1 className="text-3xl text-white flex item-center justify-center  bold">
