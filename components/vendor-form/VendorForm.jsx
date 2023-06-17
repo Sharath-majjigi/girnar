@@ -171,7 +171,8 @@ const VendorForm = ({ isEdit, id }) => {
           className={inputStyle}
           name="postalCode"
           value={postalCode}
-          maxLength="6"
+          maxLength={10}
+          minLength={3}
           onChange={(e) => {
             if (/^\d+$/.test(e.target.value)) {
               if (postCodeError) {
@@ -242,13 +243,15 @@ const VendorForm = ({ isEdit, id }) => {
           className={inputStyle}
           name="telephone"
           value={telephone}
-          maxLength="10"
+          maxLength={15}
+          minLength={6}
           onChange={(e) => {
             if (/^\d+$/.test(e.target.value)) {
-              if (e.target.value.length !== 10) {
-                setError((prev) => ({ ...prev, phoneError: true }));
-              } else {
+              if (e.target.value.length >=6 && e.target.value.length<=15 ) {
                 setError((prev) => ({ ...prev, phoneError: false }));
+              } 
+              else {
+                setError((prev) => ({ ...prev, phoneError: true }));
               }
               handleInput(e);
             } else {
@@ -258,7 +261,7 @@ const VendorForm = ({ isEdit, id }) => {
         />
         {phoneError && (
           <p className="text-red-500">
-            Enter only numbers and length should be 10
+            Enter only numbers between 6 and 15
           </p>
         )}
       </div>

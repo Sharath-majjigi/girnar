@@ -40,6 +40,10 @@ const UserModal = ({ user, cancel, name, isDelete, deleteUser }) => {
           <p className="w-24 font-semibold">Postal Code:</p>
           <p>{user.postalCode}</p>
         </div>
+        <div className="flex gap-4">
+          <p className="w-24 font-semibold">Notes:</p>
+          <p>{user.notes}</p>
+        </div>
         <div className="flex gap-4 items-center justify-center">
           {isDelete && (
             <button

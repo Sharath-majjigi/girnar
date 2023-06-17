@@ -209,12 +209,12 @@ const SalesReceiptForm = ({ isEdit, id }) => {
         <div>
           <label htmlFor="date">Invoice Date:</label>
           <input
-            type="date"
+            type="text"
             id="date"
             className={`${inputStyle} cursor-pointer`}
             name="date"
             value={date}
-            disabled={isEdit ? true : false}
+            disabled={true}
             onChange={(e) => handleInput(e, setSalesReceiptDetails)}
           />
         </div>
@@ -259,7 +259,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
             className={inputStyle}
             name="description"
             value={description}
-            disabled={isEdit ? true : false}
+            disabled={true}
             onChange={(e) => handleInput(e, setSalesReceiptDetails)}
           />
         </div>
@@ -271,7 +271,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
             className={inputStyle}
             name="message"
             value={message}
-            disabled={isEdit ? true : false}
+            disabled={true}
             onChange={(e) => handleInput(e, setSalesReceiptDetails)}
           />
         </div>

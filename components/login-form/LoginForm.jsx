@@ -98,12 +98,13 @@ const LoginForm = () => {
           <button
             className="bg-gradient-to-r from-orange-500 w-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
+            
           >
             login
           </button>
         </div>
       </form>
-      <p className="text-center text-black-500 text-xl">
+      <p className="text-center text-black-500 text">
         &copy;2023 - PT Sundish Travel Indah -All rights reserved
       </p>
     </div>

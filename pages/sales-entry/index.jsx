@@ -128,11 +128,12 @@ const Index = () => {
                   Edit
                 </Link>
                 <a
-                  href={`http://192.168.1.20:8080/jasperserver/flow.html?_flowId=viewReportFlow&reportUnit=%2FGirnar_Sales%2Finvoice&j_username=${
-                    JSON.parse(user)?.userName
-                  }&j_password=${localStorage.getItem(
-                    "token"
-                  )}&output=pdf&invoice_number=${salesEntry?.id}`}
+                  // href={`http://192.168.1.20:8080/jasperserver/flow.html?_flowId=viewReportFlow&reportUnit=%2FGirnar_Sales%2Finvoice&j_username=${
+                  //   JSON.parse(user)?.userName
+                  // }&j_password=${localStorage.getItem(
+                  //   "token"
+                  // )}&output=pdf&invoice_number=${salesEntry?.id}`}
+                  href={`http://192.168.1.20:8080/jasperserver/flow.html?_flowId=viewReportFlow&reportUnit=%2FGirnar_Sales%2Finvoice&j_username=girnar&j_password=girnar&output=pdf&invoice_number=${salesEntry?.id}`}
                   className="btn btn-sm btn-primary px-3"
                 >
                   Print Invoice

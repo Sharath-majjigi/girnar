@@ -97,8 +97,6 @@ const PurchaseForm = ({ isEdit, id }) => {
       }
       if (
         vendorId === "" ||
-        remarks === "" ||
-        description === "" ||
         isEmpty.includes(true)
       ) {
         return toast.warn("Please fill all details");
@@ -152,8 +150,6 @@ const PurchaseForm = ({ isEdit, id }) => {
       }
       if (
         vendorId === "" ||
-        remarks === "" ||
-        description === "" ||
         isEmpty.includes(true)
       ) {
         return toast.warn("Please fill all details");
@@ -307,8 +303,9 @@ const PurchaseForm = ({ isEdit, id }) => {
         <div>
           <label htmlFor="po-date">PO Date:</label>
           <input
-            type="date"
+            type="text"
             id="po-date"
+            disabled={true}
             className={`${inputStyle} cursor-pointer`}
             name="poDate"
             value={poDate}

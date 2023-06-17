@@ -312,12 +312,13 @@ const PaymentForm = ({ isEdit, id }) => {
         <div>
           <label htmlFor="poDate">PO Date:</label>
           <input
-            type="date"
+            type="text"
             id="poDate"
+            disabled={true}
             className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
             name="poDate"
             value={getDateFormate()}
-            disabled={isEdit ? true : false}
+            // disabled={isEdit ? true : false}
           />
         </div>
         <div>

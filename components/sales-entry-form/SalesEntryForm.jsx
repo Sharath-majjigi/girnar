@@ -202,8 +202,6 @@ const SalesEntryForm = ({ isEdit, id }) => {
         customerId === "" ||
         isEmpty.includes(true) ||
         date === "" ||
-        description === "" ||
-        message === "" ||
         salesCat === "" ||
         vatAmt === 0
       ) {
@@ -243,8 +241,9 @@ const SalesEntryForm = ({ isEdit, id }) => {
         <div>
           <label htmlFor="date">Invoice Date:</label>
           <input
-            type="date"
+            type="text"
             id="date"
+            disabled={true}
             className={`${inputStyle} cursor-pointer`}
             name="date"
             value={date}

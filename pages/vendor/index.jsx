@@ -22,7 +22,7 @@ const Index = () => {
 
   let filteredData;
   if (searchText) {
-    filteredData = users?.filter((d) => String(d.id).includes(searchText));
+    filteredData = users?.filter((d) => String(d.vendorName).includes(searchText) ||       String(d.telephone).includes(searchText));
   } else {
     filteredData = users;
   }
