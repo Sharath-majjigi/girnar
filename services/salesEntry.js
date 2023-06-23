@@ -41,8 +41,6 @@ const postSalesEntry = async (
       customerId === "" ||
       isEmpty.includes(true) ||
       date === "" ||
-      description === "" ||
-      message === "" ||
       salesCat === "" ||
       vatAmt === 0
     ) {

@@ -61,7 +61,7 @@ const postSalesReceipt = async (
         ...details,
       },
     });
-    if (res.status === 200) {
+    if (res.status === 201) {
       setSalesReceiptDetails(initialState);
       setSalesEntry({
         customer: { customerName: "" },

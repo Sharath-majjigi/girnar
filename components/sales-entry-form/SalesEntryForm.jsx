@@ -202,8 +202,7 @@ const SalesEntryForm = ({ isEdit, id }) => {
         customerId === "" ||
         isEmpty.includes(true) ||
         date === "" ||
-        salesCat === "" ||
-        vatAmt === 0
+        salesCat === ""
       ) {
         return toast.warn("Please fill all details");
       }
