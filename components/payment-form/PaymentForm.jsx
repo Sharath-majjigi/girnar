@@ -284,30 +284,30 @@ const PaymentForm = ({ isEdit, id }) => {
       <div className={containerStyle}>
         <div>
           <label htmlFor="purchaseOrder">PO Number:</label>
-          <select
-            className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
-            name="purchaseOrder"
-            id="purchaseOrder"
-            onChange={(e) => {
-              if (e.target.value === "") {
-                return setPohDetails({
-                  poDate: "",
-                  vendor: { vendorName: "" },
-                  description: "",
-                  remarks: "",
-                });
-              }
-              setPohDetails(JSON.parse(e.target.value));
-            }}
-            disabled={isEdit ? true : false}
-          >
-            <option value="">Select PO number</option>
-            {pohList.map((poh) => (
-              <option key={poh.id} value={JSON.stringify(poh)}>
-                {poh.id}
-              </option>
-            ))}
-          </select>
+            <select
+              className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
+              name="purchaseOrder"
+              id="purchaseOrder"
+              onChange={(e) => {
+                if (e.target.value === "") {
+                  return setPohDetails({
+                    poDate: "",
+                    vendor: { vendorName: "" },
+                    description: "",
+                    remarks: "",
+                  });
+                }
+                setPohDetails(JSON.parse(e.target.value));
+              }}
+              disabled={isEdit ? true : false}
+            >
+              <option value="">Select PO number</option>
+              {pohList.map((poh) => (
+                <option key={poh.id} value={JSON.stringify(poh)}>
+                  {poh.id}
+                </option>
+              ))}
+            </select>
         </div>
         <div>
           <label htmlFor="poDate">PO Date:</label>

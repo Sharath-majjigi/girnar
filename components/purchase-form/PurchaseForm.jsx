@@ -5,6 +5,8 @@ import axios from "axios";
 import Router from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Select from 'react-select';
+
 
 const PurchaseForm = ({ isEdit, id }) => {
   const podInitialState = {
@@ -194,7 +196,8 @@ const PurchaseForm = ({ isEdit, id }) => {
 
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
-  const containerStyle = "flex gap-6 flex-wrap justify-between w-3/4 mx-auto";
+    // const containerStyle = "grid grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6 w-3/4 mx-auto";
+    const containerStyle = "flex gap-6 flex-wrap justify-between w-3/4 mx-auto";
 
   const handleInput = (e, setPoDetails) => {
     setPoDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -276,19 +279,28 @@ const PurchaseForm = ({ isEdit, id }) => {
     setPoDetails((prev) => ({ ...prev, pod: newPod }));
   };
 
+  const [selectedVendor, setSelectedVendor] = useState(null);
+
+const handleVendorChange = (selectedOption) => {
+  setSelectedVendor(selectedOption);
+  setVendorId(selectedOption ? selectedOption.id : ''); // Update the vendorId state based on the selected option
+};
+
+
   return (
     <div>
       <h1 className="text-3xl font-medium text-center mt-4 mb-8">
         Purchase Order Form
       </h1>
       <div className={containerStyle}>
-        <div>
+        {/* <div>
           <label htmlFor="vendorId">Vendor:</label>
           <select
             className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
             name="vendorId"
             id="vendorId"
             value={vendorId}
+            
             disabled={isEdit ? true : false}
             onChange={(e) => setVendorId(e.target.value)}
           >
@@ -299,7 +311,27 @@ const PurchaseForm = ({ isEdit, id }) => {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
+
+
+
+        <div>
+          <label htmlFor="vendorId">Vendor:</label>
+
+          <Select
+          className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
+          name="vendorId"
+          id="vendorId"
+          value={selectedVendor} // Create a new state for the selected vendor
+          isDisabled={isEdit ? true : false}
+          options={vendors} // Pass the vendors array directly as options
+          onChange={handleVendorChange} // Create a new function to handle the vendor selection
+          getOptionLabel={(option) => option.vendorName} // Specify the property to display as the label
+          getOptionValue={(option) => option.id} // Specify the property to use as the value
+          placeholder="Select Vendor"
+          isSearchable={true} // Enable search functionality
+          />
+       </div>
         <div>
           <label htmlFor="po-date">PO Date:</label>
           <input
