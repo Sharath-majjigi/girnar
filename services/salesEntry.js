@@ -27,7 +27,7 @@ const postSalesEntry = async (
   refreshToken
 ) => {
   try {
-    const { salesDetailList, description, date, vatAmt, salesCat, message } =
+    const { salesDetailList, date, salesCat, message } =
       salesEntryDetails;
     const isEmpty = salesDetailList.reduce((acc, curr) => {
       if (curr.poNumber === "") {
@@ -41,8 +41,7 @@ const postSalesEntry = async (
       customerId === "" ||
       isEmpty.includes(true) ||
       date === "" ||
-      salesCat === "" ||
-      vatAmt === 0
+      salesCat === ""
     ) {
       return toast.warn("Please fill all details");
     }

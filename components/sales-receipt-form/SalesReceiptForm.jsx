@@ -35,6 +35,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
     description,
     message,
     totalInvoiceAmt,
+    totalAmountPaid,
   } = salesEntry;
   const { receiptType } = requests[0];
 
@@ -81,11 +82,6 @@ const SalesReceiptForm = ({ isEdit, id }) => {
       memorizedGetSalesReceiptById(id);
     }
   }, [isEdit, id, memorizedGetSalesReceiptById]);
-
-  const totalPaid = requests?.reduce((acc, curr) => {
-    acc += Number(curr.amountReceived);
-    return acc;
-  }, 0);
 
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
@@ -287,13 +283,13 @@ const SalesReceiptForm = ({ isEdit, id }) => {
           />
         </div>
         <div>
-          <label htmlFor="totalPaid">Total Paid:</label>
+          <label htmlFor="totalAmountPaid">Total Paid:</label>
           <input
             type="text"
-            id="totalPaid"
+            id="totalAmountPaid"
             className={inputStyle}
-            name="totalPaid"
-            value={totalPaid}
+            name="totalAmountPaid"
+            value={totalAmountPaid}
             disabled={true}
           />
         </div>

@@ -29,7 +29,7 @@ const PaymentForm = ({ isEdit, id }) => {
   });
 
   const { requests } = paymentDetails;
-  const { description, remarks, vendor } = pohDetails;
+  const { description, remarks, vendor, totalAmountPaid } = pohDetails;
   const { amountPaidError } = error;
 
   let user;
@@ -212,11 +212,6 @@ const PaymentForm = ({ isEdit, id }) => {
     return acc;
   }, 0);
 
-  const totalPaid = requests?.reduce((acc, curr) => {
-    acc += Number(curr.amountPaid);
-    return acc;
-  }, 0);
-
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
   const containerStyle = "flex gap-6 flex-wrap justify-between w-3/4 mx-auto";
@@ -377,13 +372,13 @@ const PaymentForm = ({ isEdit, id }) => {
           />
         </div>
         <div>
-          <label htmlFor="totalSellPrice">Total Paid:</label>
+          <label htmlFor="totalAmountPaid">Total Paid:</label>
           <input
             type="text"
-            id="totalPaid"
+            id="totalAmountPaid"
             className={inputStyle}
-            name="totalPaid"
-            value={totalPaid}
+            name="totalAmountPaid"
+            value={totalAmountPaid}
             disabled={true}
           />
         </div>

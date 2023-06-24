@@ -75,7 +75,7 @@ const Index = () => {
           <tr>
             <th className="w-1/4 text-center border-x-2">id</th>
             <th className="w-1/4 text-center border-r-2">Vendor Name</th>
-            <th className="w-1/4 text-center border-r-2">PO Date</th>
+            <th className="w-1/4 text-center border-r-2">Amount</th>
             <th className="w-1/4 border-r-2"></th>
           </tr>
         </thead>
@@ -105,7 +105,7 @@ const Index = () => {
               )}
               <td>{user.id}</td>
               <td>{user.vendor.vendorName}</td>
-              <td>{user.poDate}</td>
+              <td>{user.amount}</td>
               <td className="flex justify-evenly">
                 <button
                   className="btn btn-sm btn-success px-3"
