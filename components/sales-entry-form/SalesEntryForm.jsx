@@ -8,6 +8,7 @@ import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Router from "next/router";
+import Select from "react-select";
 
 const SalesEntryForm = ({ isEdit, id }) => {
   const seInitialState = {
@@ -114,14 +115,21 @@ const SalesEntryForm = ({ isEdit, id }) => {
     }));
   };
 
+  const handleInputForSC = (category, setSalesEntryDetails) => {
+    setSalesEntryDetails((prev) => ({
+      ...prev,
+      salesCat: category,
+    }));
+  };
+
   const handleEntryInput = (
-    event,
+    obj,
     entry,
     salesDetailList,
     setSalesEntryDetails
   ) => {
     let [salesDetail] = salesDetailList.filter((e) => e.id === entry.id);
-    const newId = event.target.value;
+    const newId = obj.id;
     let value;
     if (newId) {
       [value] = purchaseOrders.filter((e) => e.id === newId);
@@ -262,7 +270,7 @@ const SalesEntryForm = ({ isEdit, id }) => {
         </div>
         <div>
           <label htmlFor="customerId">Customer:</label>
-          <select
+          {/* <select
             className={`${inputStyle} cursor-pointer`}
             name="customerId"
             id="customerId"
@@ -275,11 +283,24 @@ const SalesEntryForm = ({ isEdit, id }) => {
                 {customer.customerName}
               </option>
             ))}
-          </select>
+          </select> */}
+          <Select
+            className={`border-2 border-black rounded w-44 ml-2 outline-0 inline-block ${
+              isEdit ? "" : "cursor-pointer"
+            }`}
+            name="customerId"
+            id="customerId"
+            options={customers}
+            onChange={(obj) => setCustomerId(obj.id)}
+            getOptionLabel={(option) => option.customerName}
+            getOptionValue={(option) => option.customerName}
+            placeholder="Customer"
+            isSearchable={true}
+          />
         </div>
         <div>
           <label htmlFor="salesCat">Sales Category:</label>
-          <select
+          {/* <select
             className={`${inputStyle} cursor-pointer`}
             name="salesCat"
             id="salesCat"
@@ -295,7 +316,22 @@ const SalesEntryForm = ({ isEdit, id }) => {
                 {salesCategory.category}
               </option>
             ))}
-          </select>
+          </select> */}
+          <Select
+            className={`border-2 border-black rounded w-44 ml-2 outline-0 inline-block ${
+              isEdit ? "" : "cursor-pointer"
+            }`}
+            name="salesCat"
+            id="salesCat"
+            options={salesCategories}
+            onChange={(obj) =>
+              handleInputForSC(obj.category, setSalesEntryDetails)
+            }
+            getOptionLabel={(option) => option.category}
+            getOptionValue={(option) => option.category}
+            placeholder="sales category"
+            isSearchable={true}
+          />
         </div>
         <div>
           <label htmlFor="description">Description:</label>
@@ -379,7 +415,7 @@ const SalesEntryForm = ({ isEdit, id }) => {
           {salesDetailList?.map((entry) => (
             <tr key={entry?.id}>
               <td>
-                <select
+                {/* <select
                   className={`${inputStyle} cursor-pointer`}
                   name="poNumber"
                   id="poNumber"
@@ -399,7 +435,27 @@ const SalesEntryForm = ({ isEdit, id }) => {
                       {purchaseOrder.id}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  className={`border-2 border-black rounded w-44 outline-0 inline-block ${
+                    isEdit ? "" : "cursor-pointer"
+                  }`}
+                  name="poNumber"
+                  id="poNumber"
+                  options={purchaseOrders}
+                  onChange={(obj) => {
+                    handleEntryInput(
+                      obj,
+                      entry,
+                      salesDetailList,
+                      setSalesEntryDetails
+                    );
+                  }}
+                  getOptionLabel={(option) => option.id}
+                  getOptionValue={(option) => option.id}
+                  placeholder="PO Number"
+                  isSearchable={true}
+                />
               </td>
               <td>
                 <input

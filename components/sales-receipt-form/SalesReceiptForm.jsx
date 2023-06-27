@@ -6,6 +6,7 @@ import { getDateFormate } from "@/utils/date";
 import axios from "axios";
 import Router from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
+import Select from "react-select";
 import { toast } from "react-toastify";
 
 const SalesReceiptForm = ({ isEdit, id }) => {
@@ -101,6 +102,25 @@ const SalesReceiptForm = ({ isEdit, id }) => {
     });
     setSalesReceiptDetails((prev) => ({ ...prev, requests: newRequests }));
   };
+  const handleEntryInputForPymt = (
+    type,
+    entry,
+    requests,
+    setSalesReceiptDetails
+  ) => {
+    let [newRequest] = requests.filter((e) => e.id === entry.id);
+    newRequest = {
+      ...newRequest,
+      receiptType: type,
+    };
+    let newRequests = requests.map((e) => {
+      if (e.id === entry.id) {
+        return newRequest;
+      }
+      return e;
+    });
+    setSalesReceiptDetails((prev) => ({ ...prev, requests: newRequests }));
+  };
 
   const setSalesEntryHandle = (id) => {
     const details = salesEntries.find((entry) => entry.id === id);
@@ -186,7 +206,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
       <div className={containerStyle}>
         <div>
           <label htmlFor="salesEntriesId">Invoice Number:</label>
-          <select
+          {/* <select
             className={`${inputStyle} cursor-pointer`}
             name="salesEntriesId"
             id="salesEntriesId"
@@ -200,7 +220,21 @@ const SalesReceiptForm = ({ isEdit, id }) => {
                 {salesEntry.id}
               </option>
             ))}
-          </select>
+          </select> */}
+          <Select
+            className={`border-2 border-black rounded w-44 ml-2 outline-0 inline-block ${
+              isEdit ? "" : "cursor-pointer"
+            }`}
+            name="salesEntriesId"
+            id="salesEntriesId"
+            options={salesEntries}
+            onChange={(obj) => setSalesEntryHandle(obj.id)}
+            getOptionLabel={(option) => option.id}
+            getOptionValue={(option) => option.id}
+            disabled={isEdit ? true : false}
+            placeholder="Invoice"
+            isSearchable={true}
+          />
         </div>
         <div>
           <label htmlFor="date">Invoice Date:</label>
@@ -320,7 +354,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
                 />
               </td>
               <td>
-                <select
+                {/* <select
                   className={`${inputStyle} cursor-pointer`}
                   name="receiptType"
                   id="receiptType"
@@ -335,7 +369,27 @@ const SalesReceiptForm = ({ isEdit, id }) => {
                       {paymentType.type}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  className={`border-2 border-black rounded w-44 ml-2 outline-0 inline-block ${
+                    isEdit ? "" : "cursor-pointer"
+                  }`}
+                  name="receiptType"
+                  id="receiptType"
+                  options={paymentTypes}
+                  onChange={(obj) =>
+                    handleEntryInputForPymt(
+                      obj.type,
+                      entry,
+                      requests,
+                      setSalesReceiptDetails
+                    )
+                  }
+                  getOptionLabel={(option) => option.type}
+                  getOptionValue={(option) => option.type}
+                  placeholder="Payment Type"
+                  isSearchable={true}
+                />
               </td>
               <td>
                 <input

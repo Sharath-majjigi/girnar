@@ -5,6 +5,7 @@ import { getDateFormate } from "@/utils/date";
 import axios from "axios";
 import Router from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
+import Select from "react-select";
 import { toast } from "react-toastify";
 
 const PaymentForm = ({ isEdit, id }) => {
@@ -253,6 +254,23 @@ const PaymentForm = ({ isEdit, id }) => {
     setPaymentDetails((prev) => ({ ...prev, requests: newRequests }));
   };
 
+  const han = (obj, entry, requests, setPaymentDetails) => {
+    let [newRequest] = requests.filter((e) => e.id === entry.id);
+   
+    newRequest = {
+      ...newRequest,
+      paymentType: obj.type,
+    };
+
+    let newRequests = requests.map((e) => {
+      if (e.id === entry.id) {
+        return newRequest;
+      }
+      return e;
+    });
+    setPaymentDetails((prev) => ({ ...prev, requests: newRequests }));
+  };
+
   const addNewEntry = (setPaymentDetails, requestsInitialState) => {
     setPaymentDetails((prev) => ({
       ...prev,
@@ -279,31 +297,25 @@ const PaymentForm = ({ isEdit, id }) => {
       <div className={containerStyle}>
         <div>
           <label htmlFor="purchaseOrder">PO Number:</label>
-            <select
-              className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
-              name="purchaseOrder"
-              id="purchaseOrder"
-              onChange={(e) => {
-                if (e.target.value === "") {
-                  return setPohDetails({
-                    poDate: "",
-                    vendor: { vendorName: "" },
-                    description: "",
-                    remarks: "",
-                  });
-                }
-                setPohDetails(JSON.parse(e.target.value));
-              }}
-              disabled={isEdit ? true : false}
-            >
-              <option value="">Select PO number</option>
-              {pohList.map((poh) => (
-                <option key={poh.id} value={JSON.stringify(poh)}>
-                  {poh.id}
-                </option>
-              ))}
-            </select>
+          <Select
+            className={`${inputStyle} inline-block ${
+              isEdit ? "" : "cursor-pointer"
+            }`}
+            name="purchaseOrder"
+            id="purchaseOrder"
+            isDisabled={isEdit ? true : false}
+            options={pohList}
+            onChange={(e) => {
+              setPohDetails(e);
+              console.log(e);
+            }}
+            getOptionLabel={(option) => option.id}
+            getOptionValue={(option) => option.id}
+            placeholder="PO Number"
+            isSearchable={true}
+          />
         </div>
+
         <div>
           <label htmlFor="poDate">PO Date:</label>
           <input
@@ -408,7 +420,7 @@ const PaymentForm = ({ isEdit, id }) => {
                 />
               </td>
               <td>
-                <select
+                {/* <select
                   className={`${inputStyle} cursor-pointer`}
                   name="paymentType"
                   id="paymentType"
@@ -423,7 +435,23 @@ const PaymentForm = ({ isEdit, id }) => {
                       {paymentType.type}
                     </option>
                   ))}
-                </select>
+                </select> */}
+
+                <Select
+                  className={`${inputStyle} inline-block ${
+                    isEdit ? "" : "cursor-pointer"
+                  }`}
+                  name="paymentType"
+                  id="paymentType"
+                  options={paymentTypes}
+                  onChange={(obj) => {
+                    console.log(obj)
+                    han(obj, entry, requests, setPaymentDetails);
+                  }}
+                  getOptionLabel={(option) => option.type}
+                  placeholder="Type"
+                  isSearchable={true}
+                />
               </td>
               <td>
                 <input

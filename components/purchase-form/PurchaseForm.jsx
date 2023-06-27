@@ -125,6 +125,7 @@ const PurchaseForm = ({ isEdit, id }) => {
       toast.error("Error occurred while creating the purchase order");
     }
   };
+
   const postPurchaseOrderUpdate = async (
     vendorId,
     poDetails,
@@ -196,8 +197,7 @@ const PurchaseForm = ({ isEdit, id }) => {
 
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
-    // const containerStyle = "grid grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6 w-3/4 mx-auto";
-    const containerStyle = "flex gap-6 flex-wrap justify-between w-3/4 mx-auto";
+  const containerStyle = "flex gap-6 flex-wrap justify-between w-3/4 mx-auto";
 
   const handleInput = (e, setPoDetails) => {
     setPoDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -317,12 +317,11 @@ const handleVendorChange = (selectedOption) => {
 
         <div>
           <label htmlFor="vendorId">Vendor:</label>
-
           <Select
-          className={`${inputStyle} ${isEdit ? "" : "cursor-pointer"}`}
+          className={`${inputStyle} inline-block ${isEdit ? "" : "cursor-pointer"}`}
           name="vendorId"
           id="vendorId"
-          value={selectedVendor} // Create a new state for the selected vendor
+          // value={selectedVendor} // Create a new state for the selected vendor
           isDisabled={isEdit ? true : false}
           options={vendors} // Pass the vendors array directly as options
           onChange={handleVendorChange} // Create a new function to handle the vendor selection
