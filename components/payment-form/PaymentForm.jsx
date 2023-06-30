@@ -25,6 +25,8 @@ const PaymentForm = ({ isEdit, id }) => {
   const [pohList, setPohList] = useState([]);
   const [pohDetails, setPohDetails] = useState("");
   const [paymentTypes, setPaymentTypes] = useState(undefined);
+  const [poObj, setPoObj] = useState(null);
+  const [paymentObj, setPaymentObj] = useState(null);
   const [error, setError] = useState({
     amountPaidError: [],
   });
@@ -49,8 +51,19 @@ const PaymentForm = ({ isEdit, id }) => {
         url: `${BASE_URL}pop/${id}`,
         headers: { authorization: `Bearer ${refreshToken}` },
       });
+      const res = await axios({
+        method: "get",
+        url: `${BASE_URL}payment-type/`,
+        headers: { authorization: `Bearer ${refreshToken}` },
+      });
+
       if (response.status === 200) {
         const data = response.data;
+        setPoObj(data.purchaseOrderHeader);
+        const paymentTypeObj = res.data?.find(
+          (t) => t.type === data.paymentType
+        );
+        setPaymentObj(paymentTypeObj);
         setPaymentDetails({
           requests: [
             {
@@ -71,8 +84,15 @@ const PaymentForm = ({ isEdit, id }) => {
   const memorizedGetPaymentById = useCallback(getPaymentById, [refreshToken]);
 
   useEffect(() => {
+    getPurchaseOrders(setPohList, refreshToken);
+    getPaymentTypes(setPaymentTypes, refreshToken);
+  }, [refreshToken]);
+
+  useEffect(() => {
     if (isEdit) {
-      memorizedGetPaymentById(id);
+      setTimeout(() => {
+        memorizedGetPaymentById(id);
+      }, 1000);
     }
   }, [isEdit, id, memorizedGetPaymentById]);
 
@@ -203,11 +223,6 @@ const PaymentForm = ({ isEdit, id }) => {
     }
   };
 
-  useEffect(() => {
-    getPurchaseOrders(setPohList, refreshToken);
-    getPaymentTypes(setPaymentTypes, refreshToken);
-  }, [refreshToken]);
-
   const totalPoAmount = pohDetails?.pod?.reduce((acc, curr) => {
     acc += Number(curr.purchaseCost);
     return acc;
@@ -256,7 +271,7 @@ const PaymentForm = ({ isEdit, id }) => {
 
   const han = (obj, entry, requests, setPaymentDetails) => {
     let [newRequest] = requests.filter((e) => e.id === entry.id);
-   
+
     newRequest = {
       ...newRequest,
       paymentType: obj.type,
@@ -305,10 +320,11 @@ const PaymentForm = ({ isEdit, id }) => {
             id="purchaseOrder"
             isDisabled={isEdit ? true : false}
             options={pohList}
-            onChange={(e) => {
-              setPohDetails(e);
-              console.log(e);
+            onChange={(obj) => {
+              setPoObj(obj);
+              setPohDetails(obj);
             }}
+            value={poObj}
             getOptionLabel={(option) => option.id}
             getOptionValue={(option) => option.id}
             placeholder="PO Number"
@@ -445,10 +461,12 @@ const PaymentForm = ({ isEdit, id }) => {
                   id="paymentType"
                   options={paymentTypes}
                   onChange={(obj) => {
-                    console.log(obj)
+                    setPaymentObj(obj);
                     han(obj, entry, requests, setPaymentDetails);
                   }}
+                  value={paymentObj}
                   getOptionLabel={(option) => option.type}
+                  getOptionValue={(option) => option.type}
                   placeholder="Type"
                   isSearchable={true}
                 />

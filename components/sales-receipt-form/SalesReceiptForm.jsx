@@ -27,6 +27,8 @@ const SalesReceiptForm = ({ isEdit, id }) => {
   const [salesEntries, setSalesEntries] = useState([]);
   const [salesEntry, setSalesEntry] = useState("");
   const [paymentTypes, setPaymentTypes] = useState(undefined);
+  const [paymentTypeObj, setPaymentTypeObj] = useState(null);
+  const [salesEntryObj, setSalesEntryObj] = useState(null);
 
   const { date, requests } = salesReceiptDetails;
   const {
@@ -56,8 +58,13 @@ const SalesReceiptForm = ({ isEdit, id }) => {
         url: `${BASE_URL}sales-receipt/${id}`,
         headers: { authorization: `Bearer ${refreshToken}` },
       });
+      console.log(response.data);
       if (response.status === 200) {
         const data = response?.data;
+        const obj = paymentTypes.find((t) => t.type === data.receiptType);
+        setPaymentTypeObj(obj);
+        const objTwo = salesEntries.find((t) => t.id === data.salesHeader.id);
+        setSalesEntryObj(objTwo);
         setSalesEntry(data.salesHeader);
         const date = data.salesHeader.date;
         delete data.salesHeader;
@@ -71,6 +78,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
 
   const memorizedGetSalesReceiptById = useCallback(getSalesReceiptById, [
     refreshToken,
+    paymentTypes,
   ]);
 
   useEffect(() => {
@@ -79,10 +87,10 @@ const SalesReceiptForm = ({ isEdit, id }) => {
   }, [refreshToken]);
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && paymentTypes) {
       memorizedGetSalesReceiptById(id);
     }
-  }, [isEdit, id, memorizedGetSalesReceiptById]);
+  }, [isEdit, id, paymentTypes, memorizedGetSalesReceiptById]);
 
   const inputStyle =
     "border-2 border-black rounded w-44 ml-2 outline-0 px-2 py-1";
@@ -102,6 +110,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
     });
     setSalesReceiptDetails((prev) => ({ ...prev, requests: newRequests }));
   };
+
   const handleEntryInputForPymt = (
     type,
     entry,
@@ -228,7 +237,11 @@ const SalesReceiptForm = ({ isEdit, id }) => {
             name="salesEntriesId"
             id="salesEntriesId"
             options={salesEntries}
-            onChange={(obj) => setSalesEntryHandle(obj.id)}
+            onChange={(obj) => {
+              setSalesEntryHandle(obj.id);
+              setSalesEntryObj(obj);
+            }}
+            value={salesEntryObj}
             getOptionLabel={(option) => option.id}
             getOptionValue={(option) => option.id}
             disabled={isEdit ? true : false}
@@ -312,7 +325,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
             id="invoiceAmount"
             className={inputStyle}
             name="invoiceAmount"
-            value={totalInvoiceAmt}
+            value={totalInvoiceAmt?.toLocaleString()}
             disabled={true}
           />
         </div>
@@ -323,7 +336,7 @@ const SalesReceiptForm = ({ isEdit, id }) => {
             id="totalAmountPaid"
             className={inputStyle}
             name="totalAmountPaid"
-            value={totalAmountPaid}
+            value={totalAmountPaid?.toLocaleString()}
             disabled={true}
           />
         </div>
@@ -377,14 +390,16 @@ const SalesReceiptForm = ({ isEdit, id }) => {
                   name="receiptType"
                   id="receiptType"
                   options={paymentTypes}
-                  onChange={(obj) =>
+                  onChange={(obj) => {
+                    setPaymentTypeObj(obj);
                     handleEntryInputForPymt(
                       obj.type,
                       entry,
                       requests,
                       setSalesReceiptDetails
-                    )
-                  }
+                    );
+                  }}
+                  value={paymentTypeObj}
                   getOptionLabel={(option) => option.type}
                   getOptionValue={(option) => option.type}
                   placeholder="Payment Type"

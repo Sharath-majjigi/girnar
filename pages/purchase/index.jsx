@@ -105,7 +105,7 @@ const Index = () => {
               )}
               <td>{user.id}</td>
               <td>{user.vendor.vendorName}</td>
-              <td>{user.amount}</td>
+              <td>{user.amount?.toLocaleString()}</td>
               <td className="flex justify-evenly">
                 <button
                   className="btn btn-sm btn-success px-3"

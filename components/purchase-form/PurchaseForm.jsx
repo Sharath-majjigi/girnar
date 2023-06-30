@@ -5,8 +5,7 @@ import axios from "axios";
 import Router from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Select from 'react-select';
-
+import Select from "react-select";
 
 const PurchaseForm = ({ isEdit, id }) => {
   const podInitialState = {
@@ -32,6 +31,7 @@ const PurchaseForm = ({ isEdit, id }) => {
     sellPriceError: [],
     purchaseCostError: [],
   });
+  const [selectedVendor, setSelectedVendor] = useState(null);
 
   const { poDate, description, remarks, pod } = poDetails;
   const { sellPriceError, purchaseCostError } = error;
@@ -57,6 +57,7 @@ const PurchaseForm = ({ isEdit, id }) => {
         delete data.id;
         setPoDetails({ ...data });
         setVendorId(data.vendor.id);
+        setSelectedVendor(data.vendor);
       }
     } catch (error) {
       toast.error("error occurred while getting purchase order data by id");
@@ -97,10 +98,7 @@ const PurchaseForm = ({ isEdit, id }) => {
       if (sellPriceError.length > 0 || purchaseCostError.length > 0) {
         return toast.warn("Rectify errors before saving!");
       }
-      if (
-        vendorId === "" ||
-        isEmpty.includes(true)
-      ) {
+      if (vendorId === "" || isEmpty.includes(true)) {
         return toast.warn("Please fill all details");
       }
       const newPod = pod.map((entry) => {
@@ -151,10 +149,7 @@ const PurchaseForm = ({ isEdit, id }) => {
       if (sellPriceError.length > 0 || purchaseCostError.length > 0) {
         return toast.warn("Rectify errors before saving!");
       }
-      if (
-        vendorId === "" ||
-        isEmpty.includes(true)
-      ) {
+      if (vendorId === "" || isEmpty.includes(true)) {
         return toast.warn("Please fill all details");
       }
       delete poDetails.vendor;
@@ -279,13 +274,11 @@ const PurchaseForm = ({ isEdit, id }) => {
     setPoDetails((prev) => ({ ...prev, pod: newPod }));
   };
 
-  const [selectedVendor, setSelectedVendor] = useState(null);
 
-const handleVendorChange = (selectedOption) => {
-  setSelectedVendor(selectedOption);
-  setVendorId(selectedOption ? selectedOption.id : ''); // Update the vendorId state based on the selected option
-};
-
+  const handleVendorChange = (selectedOption) => {
+    setSelectedVendor(selectedOption);
+    setVendorId(selectedOption ? selectedOption.id : "");
+  };
 
   return (
     <div>
@@ -313,24 +306,24 @@ const handleVendorChange = (selectedOption) => {
           </select>
         </div> */}
 
-
-
         <div>
           <label htmlFor="vendorId">Vendor:</label>
           <Select
-          className={`${inputStyle} inline-block ${isEdit ? "" : "cursor-pointer"}`}
-          name="vendorId"
-          id="vendorId"
-          // value={selectedVendor} // Create a new state for the selected vendor
-          isDisabled={isEdit ? true : false}
-          options={vendors} // Pass the vendors array directly as options
-          onChange={handleVendorChange} // Create a new function to handle the vendor selection
-          getOptionLabel={(option) => option.vendorName} // Specify the property to display as the label
-          getOptionValue={(option) => option.id} // Specify the property to use as the value
-          placeholder="Select Vendor"
-          isSearchable={true} // Enable search functionality
+            className={`border-2 border-black rounded w-44 ml-2 outline-0 inline-block ${
+              isEdit ? "" : "cursor-pointer"
+            }`}
+            name="vendorId"
+            id="vendorId"
+            value={selectedVendor}
+            isDisabled={isEdit ? true : false}
+            options={vendors} // Pass the vendors array directly as options
+            onChange={handleVendorChange} // Create a new function to handle the vendor selection
+            getOptionLabel={(option) => option.vendorName} // Specify the property to display as the label
+            getOptionValue={(option) => option.id} // Specify the property to use as the value
+            placeholder="Select Vendor"
+            isSearchable={true} // Enable search functionality
           />
-       </div>
+        </div>
         <div>
           <label htmlFor="po-date">PO Date:</label>
           <input

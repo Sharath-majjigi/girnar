@@ -35,6 +35,9 @@ const SalesEntryForm = ({ isEdit, id }) => {
   const [customerId, setCustomerId] = useState("");
   const [purchaseOrders, setPurchaseOrders] = useState([]);
   const [salesCategories, setSalesCategories] = useState(undefined);
+  const [custObj, setCustObj] = useState(null);
+  const [salesCatObj, setSalesCatObj] = useState(null);
+  // const [poObj, setPoObj] = useState(null);
   const [firstEffect, setFirstEffect] = useState(false);
 
   const {
@@ -66,6 +69,11 @@ const SalesEntryForm = ({ isEdit, id }) => {
       if (response.status === 200) {
         const data = response?.data;
         delete data.id;
+        // const poNumObj = purchaseOrders.find(t => t.id === data.salesDetailList[0].poNumber)
+        // setPoObj(poNumObj)
+        const salesCategoryObj = salesCategories.find(t => t.category === data.salesCat)
+        setSalesCatObj(salesCategoryObj)
+        setCustObj(data.customer);
         const { salesDetailList: list } = data;
         const detailList = list?.map((e) => {
           const ddd = purchaseOrders?.find((ee) => ee.id === e.poNumber);
@@ -82,6 +90,7 @@ const SalesEntryForm = ({ isEdit, id }) => {
   const memorizedGetSalesEntryById = useCallback(getSalesEntryById, [
     refreshToken,
     purchaseOrders,
+    salesCategories
   ]);
 
   useEffect(() => {
@@ -92,10 +101,10 @@ const SalesEntryForm = ({ isEdit, id }) => {
   }, [refreshToken]);
 
   useEffect(() => {
-    if (isEdit && firstEffect) {
+    if (isEdit && firstEffect && salesCategories) {
       memorizedGetSalesEntryById(id);
     }
-  }, [isEdit, id, firstEffect, memorizedGetSalesEntryById]);
+  }, [isEdit, id, firstEffect, salesCategories, memorizedGetSalesEntryById]);
 
   const invoiceAmount = salesDetailList.reduce((acc, curr) => {
     acc += Number(curr?.sellAmount);
@@ -291,7 +300,11 @@ const SalesEntryForm = ({ isEdit, id }) => {
             name="customerId"
             id="customerId"
             options={customers}
-            onChange={(obj) => setCustomerId(obj.id)}
+            onChange={(obj) => {
+              setCustomerId(obj.id);
+              setCustObj(obj);
+            }}
+            value={custObj}
             getOptionLabel={(option) => option.customerName}
             getOptionValue={(option) => option.customerName}
             placeholder="Customer"
@@ -324,9 +337,11 @@ const SalesEntryForm = ({ isEdit, id }) => {
             name="salesCat"
             id="salesCat"
             options={salesCategories}
-            onChange={(obj) =>
-              handleInputForSC(obj.category, setSalesEntryDetails)
-            }
+            onChange={(obj) => {
+              handleInputForSC(obj.category, setSalesEntryDetails);
+              setSalesCatObj(obj);
+            }}
+            value={salesCatObj}
             getOptionLabel={(option) => option.category}
             getOptionValue={(option) => option.category}
             placeholder="sales category"
@@ -444,6 +459,7 @@ const SalesEntryForm = ({ isEdit, id }) => {
                   id="poNumber"
                   options={purchaseOrders}
                   onChange={(obj) => {
+                    // setPoObj(obj)
                     handleEntryInput(
                       obj,
                       entry,
@@ -451,6 +467,7 @@ const SalesEntryForm = ({ isEdit, id }) => {
                       setSalesEntryDetails
                     );
                   }}
+                  // value={poObj}
                   getOptionLabel={(option) => option.id}
                   getOptionValue={(option) => option.id}
                   placeholder="PO Number"
