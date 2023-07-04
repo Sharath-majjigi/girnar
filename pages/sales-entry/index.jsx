@@ -77,7 +77,7 @@ const Index = () => {
       <table className="table table-striped mt-4 mb-10">
         <thead>
           <tr>
-            <th className="text-center border-x-2">id</th>
+            <th className="text-center border-x-2">Invoice Number</th>
             <th className="text-center border-r-2">Description</th>
             <th className="text-center border-r-2">Date</th>
             <th className="text-center border-r-2">Total Invoice Amount</th>

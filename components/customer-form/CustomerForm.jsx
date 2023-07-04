@@ -79,7 +79,7 @@ const CustomerForm = ({ isEdit, id }) => {
     emailError
   ) => {
     try {
-      if (postCodeError || phoneError || emailError) {
+      if (phoneError || emailError) {
         toast.warn("Rectify errors to add customer");
       } else {
         const response = await axios({
@@ -109,7 +109,7 @@ const CustomerForm = ({ isEdit, id }) => {
     emailError
   ) => {
     try {
-      if (postCodeError || phoneError || emailError) {
+      if (phoneError || emailError) {
         toast.warn("Rectify errors to update customer");
       } else {
         const response = await axios({

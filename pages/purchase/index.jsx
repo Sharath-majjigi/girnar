@@ -73,7 +73,7 @@ const Index = () => {
       <table className="table table-striped mt-4 mb-10">
         <thead>
           <tr>
-            <th className="w-1/4 text-center border-x-2">id</th>
+            <th className="w-1/4 text-center border-x-2">PO Number</th>
             <th className="w-1/4 text-center border-r-2">Vendor Name</th>
             <th className="w-1/4 text-center border-r-2">Amount</th>
             <th className="w-1/4 border-r-2"></th>

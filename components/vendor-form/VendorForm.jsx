@@ -74,7 +74,7 @@ const VendorForm = ({ isEdit, id }) => {
 
   const addVendor = async (vendor, postCodeError, phoneError, emailError) => {
     try {
-      if (postCodeError || phoneError || emailError) {
+      if (phoneError || emailError) {
         toast.warn("Rectify errors to add vendor");
       } else {
         const response = await axios({
@@ -104,7 +104,7 @@ const VendorForm = ({ isEdit, id }) => {
     emailError
   ) => {
     try {
-      if (postCodeError || phoneError || emailError) {
+      if (phoneError || emailError) {
         toast.warn("Rectify errors to update vendor");
       } else {
         const response = await axios({
